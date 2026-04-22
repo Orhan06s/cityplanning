@@ -1,0 +1,311 @@
+/* Metropolis - Stadsplannings simulator */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+header {
+    background-color: #2d4a22;
+    color: white;
+    padding: 15px 20px;
+}
+
+header h1 {
+    font-size: 1.5rem;
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-sub {
+    font-size: 0.8rem;
+    color: #a3c47a;
+    display: block;
+}
+
+.taal-knop {
+    flex-shrink: 0;
+}
+
+.taal-btn {
+    background-color: white;
+    color: #2d4a22;
+    border: 2px solid #a3c47a;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: bold;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.taal-btn:hover {
+    background-color: #a3c47a;
+    color: white;
+}
+
+.melding {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px 20px;
+    border-left: 4px solid #28a745;
+}
+
+main {
+    max-width: 1200px;
+    margin: 10px auto;
+    padding: 0 20px;
+}
+
+footer {
+    text-align: center;
+    padding: 15px;
+    color: #888;
+    font-size: 0.85rem;
+    margin-top: 30px;
+}
+
+/* Layout */
+.container {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Library */
+.library {
+    width: 250px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px 12px;
+    flex-shrink: 0;
+    margin-right: 40px;
+    margin-bottom: 20px;
+}
+
+.library h2,
+.grid-wrapper h2 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    color: #2d4a22;
+    border-bottom: 2px solid #2d4a22;
+    padding-bottom: 4px;
+}
+
+#zoekterm {
+    width: 100%;
+    padding: 4px 7px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+}
+
+.categorie-titel {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #888;
+    margin: 5px 0 2px;
+    font-weight: bold;
+}
+
+.library-item {
+    padding: 4px 8px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 2px;
+    cursor: grab;
+    font-size: 0.85rem;
+}
+
+.library-item:hover {
+    background-color: #e8f5e9;
+    border-color: #2d4a22;
+}
+
+.library-item.wordt-gesleept {
+    opacity: 0.4;
+}
+
+/* Grid */
+.grid-wrapper {
+    flex: 1;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 15px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.cel {
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background-color: #fafafa;
+}
+
+.cel.bezet {
+    border: 2px solid #2d4a22;
+    background-color: #e8f5e9;
+}
+
+.cel:hover {
+    border-color: #2d4a22;
+    background-color: #f1f8e9;
+}
+
+.cel.drag-over {
+    background-color: #c8e6c9;
+    border-color: #388e3c;
+    border-style: solid;
+}
+
+.cel.drag-over::after {
+    content: '↓ Loslaten';
+    display: block;
+    font-size: 0.7rem;
+    color: #1b5e20;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.cel-icon {
+    font-size: 2rem;
+}
+
+.cel-naam {
+    font-size: 0.8rem;
+    margin-top: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.leeg-tekst {
+    font-size: 0.75rem;
+    color: #bbb;
+}
+
+.verwijder-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 0.65rem;
+    cursor: pointer;
+    display: none;
+}
+
+.cel:hover .verwijder-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive – 320px en hoger */
+@media (max-width: 768px) {
+
+    /* Library en grid onder elkaar */
+    .container {
+        flex-direction: column;
+    }
+
+    .library {
+        width: 100%;
+    }
+
+    /* Grid smaller: 4 kolommen blijven maar kleinere cellen */
+    .cel {
+        min-height: 80px;
+    }
+
+    .cel-icon {
+        font-size: 1.4rem;
+    }
+
+    .cel-naam {
+        font-size: 0.65rem;
+    }
+
+    .leeg-tekst {
+        font-size: 0.65rem;
+    }
+
+    /* Verwijder knop altijd zichtbaar op touch */
+    .verwijder-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+        top: 0;
+        right: 0;
+        border-radius: 0 6px 0 6px;
+    }
+
+    /* Zoekbalk touch-vriendelijk */
+    #zoekterm {
+        min-height: 44px;
+        font-size: 1rem;
+    }
+
+    /* Library items touch-vriendelijk */
+    .library-item {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+    main {
+        padding: 0 10px;
+        margin: 10px auto;
+    }
+}
+
+/* Extra small – 320px */
+@media (max-width: 400px) {
+    .grid {
+        gap: 5px;
+    }
+
+    .cel {
+        min-height: 70px;
+    }
+
+    header h1 {
+        font-size: 1.1rem;
+    }
+}
