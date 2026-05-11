@@ -6,7 +6,7 @@ Een User Story is "Done" wanneer aan ALLE onderstaande criteria is voldaan.
 
 - [ ] De code staat in de juiste branch op GitHub en is gemerged naar `main`
 - [ ] De code volgt de afgesproken naming conventions (camelCase voor variabelen, PascalCase voor classes)
-- [ ] De code is leesbaar en voorzien van commentaar waar nodiggggg
+- [ ] De code is leesbaar en voorzien van commentaar waar nodigggggg
 - [ ] Er staan geen `dd()`, `var_dump()` of andere debug statements in de code
 - [ ] De code is geen kopie, maar zelf geschreven
 
