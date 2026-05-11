@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DestinationSeeder::class,
             GridCellSeeder::class,
+            FunctionEffectSeeder::class,
         ]);
     }
 }

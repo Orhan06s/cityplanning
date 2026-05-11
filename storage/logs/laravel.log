@@ -970,3 +970,31 @@
 #58 C:/Program Files/Herd/resources/app.asar.unpacked/resources/valet/server.php(139): require('C://Users//Hp//Dow...')
 #59 {main}
 "} 
+[2026-05-11 17:14:37] local.ERROR: Class "Database\Seeders\DB" not found {"exception":"[object] (Error(code: 0): Class \"Database\\Seeders\\DB\" not found at C:/Users/Hp/Downloads/metropolis/metropolis/database/seeders/FunctionEffectSeeder.php:95)
+[stacktrace]
+#0 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Database/Seeders/FunctionEffectSeeder->run()
+#1 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::{closure:Illuminate/Container/BoundMethod::call():35}()
+#2 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(95): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#3 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#4 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Container/Container.php(696): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#5 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(188): Illuminate/Container/Container->call(Array, Array)
+#6 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Database/Seeder.php(197): Illuminate/Database/Seeder->{closure:Illuminate/Database/Seeder::__invoke():187}()
+#7 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Database/Console/Seeds/SeedCommand.php(70): Illuminate/Database/Seeder->__invoke()
+#8 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/GuardsAttributes.php(155): Illuminate/Database/Console/Seeds/SeedCommand->{closure:Illuminate/Database/Console/Seeds/SeedCommand::handle():69}()
+#9 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Database/Console/Seeds/SeedCommand.php(69): Illuminate/Database/Eloquent/Model::unguarded(Object(Closure))
+#10 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate/Database/Console/Seeds/SeedCommand->handle()
+#11 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::{closure:Illuminate/Container/BoundMethod::call():35}()
+#12 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(95): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#13 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#14 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Container/Container.php(696): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#15 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Console/Command.php(213): Illuminate/Container/Container->call(Array)
+#16 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/symfony/console/Command/Command.php(341): Illuminate/Console/Command->execute(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#17 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Console/Command.php(182): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#18 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#19 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(Illuminate/Database/Console/Seeds/SeedCommand), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#20 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#21 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#22 C:/Users/Hp/Downloads/metropolis/metropolis/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#23 C:/Users/Hp/Downloads/metropolis/metropolis/artisan(11): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#24 {main}
+"} 
