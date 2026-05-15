@@ -5,6 +5,7 @@
     <div class="library">
         <h2><?php echo e(__('Functiebibliotheek')); ?></h2>
         <?php echo $__env->make('partials.library', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+        <?php echo $__env->make('partials.effects', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     </div>
 
     <div class="grid-wrapper">

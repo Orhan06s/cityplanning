@@ -39,7 +39,7 @@ header h1 {
 }
 
 .taal-btn {
-    background-color: rgb(227, 224, 224);
+    background-color: white;
     color: #2d4a22;
     border: 2px solid #a3c47a;
     padding: 8px 14px;
@@ -172,7 +172,7 @@ footer {
 
 .cel.bezet {
     border: 2px solid #2d4a22;
-    background-color: #e8f5f0;
+    background-color: #e8f5e9;
 }
 
 .cel:hover {
@@ -307,5 +307,548 @@ footer {
 
     header h1 {
         font-size: 1.1rem;
+    }
+}
+
+/* Effects matrix */
+:root {
+    --metro-groen: #2d5a27;
+    --metro-groen-licht: #4a7c42;
+    --kleur-positief: #1a7a1a;
+    --kleur-positief-bg: #d4edda;
+    --kleur-positief-donker: #155215;
+    --kleur-negatief: #c0392b;
+    --kleur-negatief-bg: #fde8e6;
+    --kleur-negatief-donker: #922b21;
+    --kleur-neutraal: #666;
+    --kleur-neutraal-bg: #f0f0f0;
+    --font-hoofd: 'Segoe UI', 'Helvetica Neue', sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+    --radius: 6px;
+    --cel-min: 72px;
+}
+
+.effecten-sectie {
+    background: #fff;
+    border: 1px solid #d0d8cc;
+    border-radius: 10px;
+    padding: 1.5rem 1.75rem 2rem;
+    margin: 1.5rem 0;
+    font-family: var(--font-hoofd);
+    box-shadow: 0 2px 8px rgba(45, 90, 39, 0.08);
+}
+
+.effecten-header {
+    margin-bottom: 1rem;
+}
+
+.effecten-titel {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--metro-groen);
+    margin: 0 0 0.25rem;
+    letter-spacing: 0;
+    border-bottom: 2px solid var(--metro-groen);
+    padding-bottom: 0.4rem;
+}
+
+.effecten-subtitel {
+    font-size: 0.85rem;
+    color: #555;
+    margin: 0;
+}
+
+.effecten-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.8rem;
+    color: #444;
+}
+
+.legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.legenda-kleur {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.legenda-kleur.effect-positief {
+    background: var(--kleur-positief-bg);
+    border-color: var(--kleur-positief);
+}
+
+.legenda-kleur.effect-negatief {
+    background: var(--kleur-negatief-bg);
+    border-color: var(--kleur-negatief);
+}
+
+.legenda-kleur.effect-neutraal {
+    background: var(--kleur-neutraal-bg);
+    border-color: #bbb;
+}
+
+.effecten-tabel-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    border-radius: var(--radius);
+    outline: none;
+}
+
+.effecten-tabel-wrapper:focus-visible {
+    outline: 2px solid var(--metro-groen);
+    outline-offset: 2px;
+}
+
+.effecten-tabel {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.88rem;
+    table-layout: fixed;
+}
+
+.effecten-tabel thead tr {
+    background: var(--metro-groen);
+}
+
+.effecten-tabel thead th {
+    padding: 0.65rem 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: #fff;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    border-bottom: 3px solid var(--metro-groen-licht);
+}
+
+.th-functie {
+    text-align: left !important;
+    width: 160px;
+    border-radius: var(--radius) 0 0 0;
+}
+
+.th-veiligheid {
+    background: #27643e !important;
+}
+
+.th-recreatie {
+    background: #2a5d36 !important;
+}
+
+.th-milieukwaliteit {
+    background: #2d5a27 !important;
+}
+
+.th-voorzieningen {
+    background: #305730 !important;
+}
+
+.th-mobiliteit {
+    background: #335435 !important;
+}
+
+@keyframes rij-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.effecten-rij {
+    animation: rij-in 0.3s ease both;
+}
+
+.effecten-rij:nth-child(even) {
+    background: #f8faf7;
+}
+
+.effecten-rij:hover {
+    background: #edf5eb;
+    transition: background 0.15s ease;
+}
+
+.td-functienaam {
+    padding: 0.55rem 0.75rem;
+    font-weight: 600;
+    color: #1e3a1a;
+    text-align: left;
+    white-space: nowrap;
+    border-right: 2px solid #d0d8cc;
+    font-size: 0.88rem;
+}
+
+.td-score {
+    padding: 0.45rem 0.5rem;
+    text-align: center;
+    min-width: var(--cel-min);
+    font-family: var(--font-mono);
+    font-size: 0.92rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+    transition: filter 0.15s ease, transform 0.15s ease;
+    cursor: default;
+    position: relative;
+}
+
+.td-score:hover {
+    filter: brightness(0.92);
+    transform: scale(1.04);
+    z-index: 1;
+    border-radius: 4px;
+}
+
+.effecten-tabel tbody tr:not(:last-child) td,
+.effecten-tabel tbody tr:not(:last-child) th {
+    border-bottom: 1px solid #e2e8e0;
+}
+
+.effect-positief {
+    background-color: var(--kleur-positief-bg);
+    color: var(--kleur-positief-donker);
+    border-color: rgba(26, 122, 26, 0.18) !important;
+}
+
+.effect-negatief {
+    background-color: var(--kleur-negatief-bg);
+    color: var(--kleur-negatief-donker);
+    border-color: rgba(192, 57, 43, 0.18) !important;
+}
+
+.effect-neutraal {
+    background-color: var(--kleur-neutraal-bg);
+    color: var(--kleur-neutraal);
+    border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.score-waarde {
+    display: block;
+    line-height: 1;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.effecten-tabel td:focus-visible,
+.effecten-tabel th:focus-visible {
+    outline: 3px solid var(--metro-groen);
+    outline-offset: -2px;
+    z-index: 2;
+    position: relative;
+}
+
+@media (min-width: 1024px) {
+    .effecten-tabel {
+        font-size: 0.9rem;
+    }
+
+    .th-functie {
+        width: 180px;
+    }
+
+    .td-score {
+        min-width: 90px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (forced-colors: active) {
+    .effect-positief,
+    .effect-negatief,
+    .effect-neutraal {
+        background: ButtonFace;
+        color: ButtonText;
+        border: 1px solid ButtonText;
+        forced-color-adjust: none; /*safari hebt geen support*/
+    }
+}
+
+/* Effectenmatrix panel */
+:root {
+    --metro-groen-hover: #3a7032;
+    --panel-breedte: 700px;
+}
+
+.library {
+    position: relative;
+}
+
+#effecten-trigger-wrapper {
+    margin-top: 0.8rem;
+    margin-bottom: 0.6rem;
+}
+
+.effecten-trigger-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    width: 100%;
+    padding: 0.55rem 0.85rem;
+    background: var(--metro-groen);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+    outline: none;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* Eski Edge/IE */
+    user-select: none;         /* Modern browsers */
+}
+
+.effecten-trigger-btn:hover,
+.effecten-trigger-btn:focus-visible {
+    background: var(--metro-groen-hover);
+    box-shadow: 0 2px 8px rgba(45, 90, 39, 0.25);
+}
+
+.effecten-trigger-btn:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: -3px;
+}
+
+.trigger-icon {
+    font-size: 1rem;
+}
+
+.trigger-label {
+    flex: 1;
+    text-align: left;
+}
+
+.trigger-chevron {
+    display: inline-block;
+    font-size: 0.9rem;
+    transition: transform 0.25s ease;
+}
+
+.effecten-trigger-btn[aria-expanded="true"] .trigger-chevron {
+    transform: rotate(180deg);
+}
+
+.effecten-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 200;
+    width: var(--panel-breedte);
+    max-width: calc(100vw - 40px);
+    max-height: 80vh;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #c8d8c4;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(45, 90, 39, 0.18);
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.97);
+    transform-origin: top left;
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.effecten-panel.is-open {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    pointer-events: auto;
+}
+
+.effecten-panel-inner {
+    padding: 1.1rem 1.25rem 1.25rem;
+    overflow-y: auto;
+    max-height: calc(80vh - 2px);
+}
+
+.effecten-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+}
+
+.effecten-panel .effecten-titel {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--metro-groen);
+    margin: 0;
+    border-bottom: 2px solid var(--metro-groen);
+    padding-bottom: 0.3rem;
+    flex: 1;
+    letter-spacing: 0;
+}
+
+.effecten-sluit-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #888;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    line-height: 1;
+    transition: color 0.1s ease, background 0.1s ease;
+    margin-left: 0.75rem;
+}
+
+.effecten-sluit-btn:hover {
+    color: #333;
+    background: #f0f0f0;
+}
+
+.effecten-sluit-btn:focus-visible {
+    outline: 2px solid var(--metro-groen);
+    outline-offset: 1px;
+}
+
+.effecten-panel .effecten-subtitel {
+    font-size: 0.78rem;
+    color: #666;
+    margin: 0 0 0.7rem;
+}
+
+.effecten-panel .effecten-legenda {
+    display: flex;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
+    font-size: 0.76rem;
+    color: #444;
+    flex-wrap: wrap;
+}
+
+.effecten-panel .legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.effecten-panel .legenda-kleur {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+}
+
+.effecten-panel .effecten-tabel-wrapper {
+    overflow-x: auto;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    border-radius: 4px;
+    outline: none;
+}
+
+.effecten-panel .effecten-tabel {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.82rem;
+    table-layout: fixed;
+}
+
+.effecten-panel .effecten-tabel thead th {
+    padding: 0.55rem 0.6rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: #fff;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    border-bottom: 2px solid var(--metro-groen-licht);
+}
+
+.effecten-panel .th-functie {
+    text-align: left !important;
+    width: 140px;
+    border-radius: 8px 0 0 0;
+}
+
+@keyframes effecten-panel-rij-in {
+    from {
+        opacity: 0;
+        transform: translateX(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.effecten-panel.is-open .effecten-rij {
+    animation: effecten-panel-rij-in 0.25s ease both;
+}
+
+.effecten-panel .td-functienaam {
+    padding: 0.45rem 0.6rem;
+    font-weight: 600;
+    color: #1e3a1a;
+    text-align: left;
+    white-space: nowrap;
+    border-right: 2px solid #d0d8cc;
+    font-size: 0.82rem;
+}
+
+.effecten-panel .td-score {
+    padding: 0.35rem 0.4rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+    cursor: default;
+    position: relative;
+    transition: filter 0.12s ease, transform 0.12s ease;
+}
+
+.effecten-panel .td-score:hover {
+    filter: brightness(0.9);
+    transform: scale(1.06);
+    z-index: 1;
+    border-radius: 3px;
+}
+
+.effecten-panel .td-score:focus-visible {
+    outline: 2px solid var(--metro-groen);
+    outline-offset: -2px;
+}
+
+@media (max-width: 768px) {
+    .effecten-panel {
+        position: static;
+        width: 100%;
+        max-width: 100%;
+        max-height: none;
     }
 }

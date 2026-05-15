@@ -133,3 +133,103 @@ document.getElementById('zoekterm').addEventListener('input', function() {
 
     document.getElementById('geen-resultaten').style.display = zichtbaar === 0 ? 'block' : 'none';
 });
+
+// Effectenmatrix openen/sluiten via hover en klik
+(function() {
+    'use strict';
+
+    var trigger = document.getElementById('effecten-trigger');
+    var panel = document.getElementById('effecten-panel');
+    var sluitBtn = document.getElementById('effecten-sluit');
+
+    if (!trigger || !panel) return;
+
+    var hoverTimer = null;
+    var sluitTimer = null;
+    var lockedOpen = false;
+
+    function openPanel() {
+        clearTimeout(sluitTimer);
+        panel.hidden = false;
+        panel.classList.add('is-open');
+        panel.setAttribute('aria-hidden', 'false');
+        trigger.setAttribute('aria-expanded', 'true');
+    }
+
+    function sluitPanel() {
+        clearTimeout(hoverTimer);
+        clearTimeout(sluitTimer);
+        lockedOpen = false;
+        panel.classList.remove('is-open');
+        panel.setAttribute('aria-hidden', 'true');
+        trigger.setAttribute('aria-expanded', 'false');
+        panel.hidden = true;
+    }
+
+    function togglePanel() {
+        if (panel.classList.contains('is-open')) {
+            lockedOpen = false;
+            sluitPanel();
+        } else {
+            lockedOpen = true;
+            openPanel();
+        }
+    }
+
+    trigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        togglePanel();
+    });
+
+    if (sluitBtn) {
+        sluitBtn.addEventListener('click', function() {
+            sluitPanel();
+            trigger.focus();
+        });
+    }
+
+    trigger.addEventListener('mouseenter', function() {
+        clearTimeout(sluitTimer);
+        hoverTimer = setTimeout(function() {
+            if (!lockedOpen) openPanel();
+        }, 200);
+    });
+
+    trigger.addEventListener('mouseleave', function() {
+        clearTimeout(hoverTimer);
+        if (!lockedOpen) {
+            sluitTimer = setTimeout(sluitPanel, 350);
+        }
+    });
+
+    panel.addEventListener('mouseenter', function() {
+        clearTimeout(sluitTimer);
+    });
+
+    panel.addEventListener('mouseleave', function() {
+        if (!lockedOpen) {
+            sluitTimer = setTimeout(sluitPanel, 350);
+        }
+    });
+
+    document.addEventListener('pointerdown', function(e) {
+        if (!panel.contains(e.target) && !trigger.contains(e.target)) {
+            if (panel.classList.contains('is-open')) {
+                sluitPanel();
+            }
+        }
+    }, true);
+
+    document.querySelectorAll('.library-item').forEach(function(item) {
+        item.addEventListener('dragstart', sluitPanel);
+        item.addEventListener('mousedown', sluitPanel);
+        item.addEventListener('touchstart', sluitPanel, { passive: true });
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && panel.classList.contains('is-open')) {
+            sluitPanel();
+            trigger.focus();
+        }
+    });
+})();

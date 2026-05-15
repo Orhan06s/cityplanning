@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metropolis</title>
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
-    <link rel="stylesheet" href="<?php echo e(asset('css/style.css')); ?>">
+   <link rel="stylesheet" href="<?php echo e(asset('css/style.css')); ?>?v=<?php echo e(filemtime(public_path('css/style.css'))); ?>">
 </head>
 <body>
 
