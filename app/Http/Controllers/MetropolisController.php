@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Destination;
 use App\Models\GridCell;
+use App\Services\EffectsCalculator;
 
 class MetropolisController extends Controller
 {
@@ -13,12 +14,18 @@ class MetropolisController extends Controller
         // Altijd alle bestemmingen laden (zoeken gebeurt in de browser via JS)
         $destinationsByCategory = Destination::all()->groupBy('category');
         $gridCells = GridCell::with('destination')->orderBy('position')->get();
-        $effecten = $this->berekenEffecten($gridCells);
+
+        // Effecten berekenen via de service.
+        // Output: ['veiligheid' => X, 'recreatie' => Y, ...]  → klaar voor de Effects-view.
+        $calculator = new EffectsCalculator();
+        $effecten   = $calculator->calculate($gridCells);
+        $categories = $calculator->getCategories();
 
         return view('metropolis', [
             'destinationsByCategory' => $destinationsByCategory,
             'gridCells'              => $gridCells,
             'effecten'               => $effecten,
+            'categories'             => $categories,
         ]);
     }
 
@@ -47,36 +54,5 @@ class MetropolisController extends Controller
         $cell->save();
 
         return redirect('/')->with('success', __('Functie verwijderd!'));
-    }
-
-    private function berekenEffecten($gridCells)
-    {
-        $leefbaarheid = 0;
-        $welzijn = 0;
-
-        foreach ($gridCells as $cell) {
-            if ($cell->destination) {
-                if ($cell->destination->category === 'parks') {
-                    $leefbaarheid += 10;
-                    $welzijn += 5;
-                }
-                if ($cell->destination->category === 'public_services') {
-                    $leefbaarheid += 5;
-                    $welzijn += 10;
-                }
-                if ($cell->destination->category === 'emergency_services') {
-                    $welzijn += 8;
-                }
-                if ($cell->destination->category === 'buildings') {
-                    $leefbaarheid += 2;
-                }
-            }
-        }
-
-        return [
-            'leefbaarheid' => $leefbaarheid,
-            'welzijn'      => $welzijn,
-            'max'          => 120,
-        ];
     }
 }

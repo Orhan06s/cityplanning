@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Services;
+
+class EffectsCalculator
+{
+    private $categories;
+    private $functions;
+
+    public function __construct(?array $matrix = null)
+    {
+        if ($matrix === null) {
+            $matrix = [
+                'categories' => config('effects.categories'),
+                'functions'  => config('effects.functions'),
+            ];
+        }
+
+        $this->categories = $matrix['categories'] ?? [];
+        $this->functions  = $matrix['functions']  ?? [];
+    }
+
+    public function calculate($gridCells)
+    {
+        $totals = [];
+        foreach ($this->categories as $cat) {
+            $totals[$cat] = 0;
+        }
+
+        foreach ($gridCells as $cell) {
+            if (!$cell->destination) {
+                continue;
+            }
+
+            $naam = $cell->destination->name;
+
+            if (!isset($this->functions[$naam])) {
+                continue;
+            }
+
+            foreach ($this->functions[$naam] as $cat => $punten) {
+                if (isset($totals[$cat])) {
+                    $totals[$cat] += $punten;
+                }
+            }
+        }
+
+        return $totals;
+    }
+
+    public function validate()
+    {
+        $errors = [];
+
+        foreach ($this->functions as $naam => $effecten) {
+            foreach ($this->categories as $cat) {
+                if (!array_key_exists($cat, $effecten)) {
+                    $errors[] = "Functie '$naam' mist categorie '$cat'";
+                }
+            }
+
+            foreach (array_keys($effecten) as $cat) {
+                if (!in_array($cat, $this->categories)) {
+                    $errors[] = "Functie '$naam' heeft onbekende categorie '$cat'";
+                }
+            }
+        }
+
+        return $errors;
+    }
+
+    public function getCategories()
+    {
+        return $this->categories;
+    }
+
+    public function getMatrix()
+    {
+        return $this->functions;
+    }
+}
