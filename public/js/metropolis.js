@@ -1,7 +1,7 @@
 var draggedId   = null;
 var geselecteerd = null; // voor toetsenbord
 
-// Library items sleepbaar + toetsenbord selectie
+// Library items sleepbaar + toetsenbord selectie + touch
 document.querySelectorAll('.library-item').forEach(function(item) {
     item.draggable = true;
 
@@ -25,6 +25,82 @@ document.querySelectorAll('.library-item').forEach(function(item) {
             geselecteerd = item.getAttribute('data-id');
             item.style.outline = '2px solid #2d4a22';
         }
+    });
+
+    // Touch slepen voor mobiel
+    var touchDragGhost = null;
+    var laatsteCel = null;
+
+    item.addEventListener('touchstart', function(e) {
+        draggedId = item.getAttribute('data-id');
+        item.style.opacity = '0.4';
+
+        // Maak een visueel "spook" element dat de vinger volgt
+        var rect = item.getBoundingClientRect();
+        touchDragGhost = item.cloneNode(true);
+        touchDragGhost.style.position = 'fixed';
+        touchDragGhost.style.top = rect.top + 'px';
+        touchDragGhost.style.left = rect.left + 'px';
+        touchDragGhost.style.width = rect.width + 'px';
+        touchDragGhost.style.pointerEvents = 'none';
+        touchDragGhost.style.opacity = '0.85';
+        touchDragGhost.style.zIndex = '9999';
+        touchDragGhost.style.transform = 'scale(1.05)';
+        touchDragGhost.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25)';
+        document.body.appendChild(touchDragGhost);
+    }, { passive: true });
+
+    item.addEventListener('touchmove', function(e) {
+        if (!touchDragGhost) return;
+        e.preventDefault();
+        var touch = e.touches[0];
+
+        // Volg de vinger
+        var rect = touchDragGhost.getBoundingClientRect();
+        touchDragGhost.style.top = (touch.clientY - rect.height / 2) + 'px';
+        touchDragGhost.style.left = (touch.clientX - rect.width / 2) + 'px';
+
+        // Vind cel onder de vinger
+        touchDragGhost.style.display = 'none';
+        var elementOnder = document.elementFromPoint(touch.clientX, touch.clientY);
+        touchDragGhost.style.display = '';
+
+        var celOnder = elementOnder ? elementOnder.closest('.cel') : null;
+
+        if (celOnder !== laatsteCel) {
+            if (laatsteCel) laatsteCel.classList.remove('drag-over');
+            if (celOnder) celOnder.classList.add('drag-over');
+            laatsteCel = celOnder;
+        }
+    }, { passive: false });
+
+    item.addEventListener('touchend', function(e) {
+        item.style.opacity = '1';
+        if (touchDragGhost) {
+            touchDragGhost.remove();
+            touchDragGhost = null;
+        }
+        if (laatsteCel) {
+            laatsteCel.classList.remove('drag-over');
+            if (draggedId) {
+                plaatsOpCel(laatsteCel.getAttribute('data-cell-id'), draggedId);
+            }
+            laatsteCel = null;
+        }
+        draggedId = null;
+    });
+
+    item.addEventListener('touchcancel', function() {
+        item.style.opacity = '1';
+        if (touchDragGhost) {
+            touchDragGhost.remove();
+            touchDragGhost = null;
+        }
+        if (laatsteCel) {
+            laatsteCel.classList.remove('drag-over');
+            laatsteCel = null;
+        }
+        draggedId = null;
     });
 });
 

@@ -2,6 +2,8 @@
 
 @section('content')
 
+@include('partials.totalen')
+
 <div class="container">
 
     <div class="library">
