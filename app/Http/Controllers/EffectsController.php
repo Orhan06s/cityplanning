@@ -11,6 +11,10 @@ class EffectsController extends Controller
 {
     public function page()
     {
+        // Eerst self-heal: vul function_effects vanuit config als de tabel
+        // leeg is of helemaal op 0 staat. Daarna pas lezen.
+        EffectsCalculator::ensureSeeded();
+
         $effects = FunctionEffect::orderBy('function_name')->orderBy('category')->get();
         $groupedByFunction = $effects->groupBy('function_name');
 

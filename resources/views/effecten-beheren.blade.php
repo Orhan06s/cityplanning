@@ -7,9 +7,6 @@
 <div class="manager-pagina">
 
     <div class="manager-pagina-header">
-        <a href="{{ route('home') }}" class="manager-terug-link" aria-label="{{ __('Terug naar stadsgebied') }}">
-            <span aria-hidden="true">←</span> {{ __('Terug naar stadsgebied') }}
-        </a>
         <h2 class="manager-pagina-titel">
             <span aria-hidden="true">⚙️</span>
             {{ __('Effecten beheren') }}

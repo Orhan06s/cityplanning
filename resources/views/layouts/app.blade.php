@@ -12,9 +12,23 @@
 
     <header>
         <div class="header-inner">
-            <div>
-                <h1> Metropolis</h1>
+            <div class="header-merk">
+                <h1>Metropolis</h1>
             </div>
+
+            <nav class="header-nav" aria-label="{{ __('Hoofdnavigatie') }}">
+                <a href="{{ route('home') }}"
+                   class="nav-link {{ request()->routeIs('home') ? 'is-actief' : '' }}">
+                    <span aria-hidden="true">🏙️</span>
+                    {{ __('Stadsgebied') }}
+                </a>
+                <a href="{{ route('effects.manager') }}"
+                   class="nav-link {{ request()->routeIs('effects.manager') ? 'is-actief' : '' }}">
+                    <span aria-hidden="true">⚙️</span>
+                    {{ __('Effecten beheren') }}
+                </a>
+            </nav>
+
             <div class="taal-knop">
                 <a href="{{ route('taal', 'nl') }}" class="taal-vlag {{ app()->getLocale() === 'nl' ? 'actief' : '' }}" title="Nederlands" aria-label="Nederlands">
                     <span class="fi fi-nl"></span>

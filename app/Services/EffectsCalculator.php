@@ -12,19 +12,18 @@ class EffectsCalculator
     public function __construct(?array $matrix = null)
     {
         if ($matrix === null) {
-            // Try to load from database first
             try {
+                self::ensureSeeded();
                 $effects = FunctionEffect::all();
                 if ($effects->isNotEmpty()) {
-                    $this->functions = FunctionEffect::getMatrixByFunction();
+                    $this->functions  = FunctionEffect::getMatrixByFunction();
                     $this->categories = config('effects.categories');
                     return;
                 }
             } catch (\Exception $e) {
-                // Fall back to config if database is not ready
+                // Database niet beschikbaar — val terug op config
             }
 
-            // Fall back to config
             $matrix = [
                 'categories' => config('effects.categories'),
                 'functions'  => config('effects.functions'),
@@ -33,6 +32,42 @@ class EffectsCalculator
 
         $this->categories = $matrix['categories'] ?? [];
         $this->functions  = $matrix['functions']  ?? [];
+    }
+
+    /**
+     * Vult de function_effects tabel met de waarden uit config/effects.php
+     * als er nog geen "echte" data is. Veilig om elke request aan te roepen:
+     * als er ook maar één row met points != 0 in een geldige categorie staat,
+     * doen we niets (zo blijven user-customizations behouden).
+     */
+    public static function ensureSeeded(): void
+    {
+        $categories = config('effects.categories', []);
+        $functions  = config('effects.functions', []);
+
+        if (empty($categories) || empty($functions)) {
+            return;
+        }
+
+        $hasRealData = FunctionEffect::whereIn('category', $categories)
+            ->where('points', '!=', 0)
+            ->exists();
+
+        if ($hasRealData) {
+            return;
+        }
+
+        // Geen bruikbare data — wipe en herseed uit config
+        FunctionEffect::truncate();
+        foreach ($functions as $functionName => $effects) {
+            foreach ($effects as $category => $points) {
+                FunctionEffect::create([
+                    'function_name' => $functionName,
+                    'category'      => $category,
+                    'points'        => $points,
+                ]);
+            }
+        }
     }
 
     public function calculate($gridCells)
