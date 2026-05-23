@@ -979,6 +979,13 @@ footer {
 }
 
 /* ============== Effects Manager ============== */
+
+/* KRITIEK: hidden attribute moet altijd verbergen — anders blokkeren onzichtbare
+   modals met display:flex/opacity:0 alle clicks op de pagina */
+[hidden] {
+    display: none !important;
+}
+
 #effects-manager-wrapper {
     margin-top: 0.8rem;
     margin-bottom: 0.6rem;
@@ -1506,11 +1513,13 @@ footer {
     justify-content: center;
     padding: 1rem;
     opacity: 0;
+    pointer-events: none;
     transition: opacity 0.2s ease;
 }
 
 .submodal[aria-hidden="false"] {
     opacity: 1;
+    pointer-events: auto;
 }
 
 .submodal-inner {
