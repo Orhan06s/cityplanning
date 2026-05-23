@@ -9,17 +9,20 @@ use App\Services\EffectsCalculator;
 
 class EffectsController extends Controller
 {
-    public function getManager()
+    public function page()
     {
         $effects = FunctionEffect::orderBy('function_name')->orderBy('category')->get();
         $groupedByFunction = $effects->groupBy('function_name');
 
+        $gridCells  = GridCell::with('destination')->get();
         $calculator = new EffectsCalculator();
+        $effecten   = $calculator->calculate($gridCells);
         $categories = $calculator->getCategories();
 
-        return view('partials.effects-manager', [
+        return view('effecten-beheren', [
             'groupedByFunction' => $groupedByFunction,
-            'categories' => $categories,
+            'categories'        => $categories,
+            'effecten'          => $effecten,
         ]);
     }
 

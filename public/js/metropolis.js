@@ -310,18 +310,16 @@ document.getElementById('zoekterm').addEventListener('input', function() {
     });
 })();
 
-// Effects Manager — live editing, debounced save, geen page reload
+// Effects Manager — alleen actief op /effecten-beheren pagina
 (function() {
     'use strict';
 
+    var tbody = document.getElementById('effects-tbody');
+    if (!tbody) return; // niet op de manager pagina
+
     var i18n = window.metroI18n || {};
 
-    var trigger          = document.getElementById('effects-manager-trigger');
-    var panel            = document.getElementById('effects-manager-panel');
-    var backdrop         = document.getElementById('effects-manager-backdrop');
-    var sluitBtn         = document.getElementById('effects-manager-sluit');
     var addFunctionBtn   = document.getElementById('add-function-btn');
-    var tbody            = document.getElementById('effects-tbody');
     var stats            = document.getElementById('effects-manager-stats');
     var zoekInput        = document.getElementById('effects-manager-zoek-input');
     var totalenGrid      = document.getElementById('totalen-grid');
@@ -334,54 +332,19 @@ document.getElementById('zoekterm').addEventListener('input', function() {
     var deleteBevestig   = document.getElementById('delete-function-bevestig');
     var toastContainer   = document.getElementById('toast-container');
 
-    if (!trigger || !panel) return;
-
     var deleteTargetFunction = null;
-    var saveTimers = {};      // debounce per input
-    var savedStatusTimers = {}; // hide "saved" indicator after delay
+    var saveTimers = {};
+    var savedStatusTimers = {};
 
     function csrfToken() {
         var meta = document.querySelector('meta[name="csrf-token"]');
         return meta ? meta.getAttribute('content') : '';
     }
 
-    // ============ Hoofdpaneel open/dicht ============
-    function openPanel() {
-        panel.hidden = false;
-        backdrop.hidden = false;
-        // force reflow voor smooth fade-in
-        void panel.offsetWidth;
-        panel.setAttribute('aria-hidden', 'false');
-        backdrop.classList.add('is-visible');
-        trigger.setAttribute('aria-expanded', 'true');
-        document.body.style.overflow = 'hidden';
-        updateStats();
-    }
-
-    function closePanel() {
-        if (panel.hidden) return;
-        panel.setAttribute('aria-hidden', 'true');
-        backdrop.classList.remove('is-visible');
-        trigger.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
-        // wacht op transitie
-        setTimeout(function() {
-            panel.hidden = true;
-            backdrop.hidden = true;
-        }, 200);
-        closeSubmodal(addModal);
-        closeSubmodal(deleteModal);
-    }
-
-    trigger.addEventListener('click', openPanel);
-    if (sluitBtn) sluitBtn.addEventListener('click', function() { closePanel(); trigger.focus(); });
-    backdrop.addEventListener('click', closePanel);
-
     document.addEventListener('keydown', function(e) {
         if (e.key !== 'Escape') return;
-        if (!addModal.hidden) { closeSubmodal(addModal); return; }
-        if (!deleteModal.hidden) { closeSubmodal(deleteModal); return; }
-        if (!panel.hidden) { closePanel(); trigger.focus(); }
+        if (addModal && !addModal.hidden) { closeSubmodal(addModal); return; }
+        if (deleteModal && !deleteModal.hidden) { closeSubmodal(deleteModal); return; }
     });
 
     // ============ Submodal helpers ============
@@ -715,7 +678,8 @@ document.getElementById('zoekterm').addEventListener('input', function() {
     function showEmptyIfNeeded() {
         if (tbody.querySelector('.effects-row')) return;
         if (document.getElementById('effects-empty-row')) return;
-        var cols = panel.querySelectorAll('thead th').length;
+        var table = tbody.closest('table');
+        var cols = table ? table.querySelectorAll('thead th').length : 1;
         var tr = document.createElement('tr');
         tr.id = 'effects-empty-row';
         var td = document.createElement('td');

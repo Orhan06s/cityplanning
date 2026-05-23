@@ -991,12 +991,13 @@ footer {
     margin-bottom: 0.6rem;
 }
 
+/* Link-style trigger op de hoofdpagina */
 .effects-manager-btn {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.5rem;
     width: 100%;
-    padding: 0.55rem 0.85rem;
+    padding: 0.6rem 0.9rem;
     background: #6b4c9a;
     color: #fff;
     border: none;
@@ -1006,6 +1007,7 @@ footer {
     font-weight: 600;
     cursor: pointer;
     letter-spacing: 0.02em;
+    text-decoration: none;
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
     outline: none;
     user-select: none;
@@ -1026,66 +1028,67 @@ footer {
     outline-offset: -3px;
 }
 
-/* Backdrop — apart element, geen ::before hack */
-.effects-manager-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(20, 20, 30, 0.55);
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
-    z-index: 290;
-    opacity: 0;
-    transition: opacity 0.25s ease;
-}
-
-.effects-manager-backdrop.is-visible {
-    opacity: 1;
-}
-
-.effects-manager-panel {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -48%) scale(0.97);
-    z-index: 300;
-    width: min(95vw, 920px);
-    max-height: 90vh;
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.22s ease, transform 0.22s ease;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.effects-manager-panel[aria-hidden="false"] {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-    pointer-events: auto;
-}
-
-.effects-manager-inner {
-    padding: 1.4rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
+.effects-manager-btn .trigger-label {
     flex: 1;
 }
 
-.effects-manager-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.6rem;
-    padding-bottom: 0.85rem;
-    border-bottom: 2px solid #e2e8e0;
+.effects-manager-btn .trigger-arrow {
+    font-size: 1rem;
+    transition: transform 0.15s ease;
 }
 
-.effects-manager-titel {
-    font-size: 1.25rem;
+.effects-manager-btn:hover .trigger-arrow {
+    transform: translateX(3px);
+}
+
+/* === Manager pagina layout === */
+.manager-pagina {
+    max-width: 1200px;
+    margin: 1rem auto 2rem;
+    padding: 1.5rem;
+    background: #fff;
+    border: 1px solid #d0d8cc;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(45, 90, 39, 0.06);
+}
+
+.manager-pagina-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8e0;
+    flex-wrap: wrap;
+}
+
+.manager-terug-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #2d4a22;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.45rem 0.75rem;
+    border: 1.5px solid #c8d8c4;
+    border-radius: 6px;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.manager-terug-link:hover,
+.manager-terug-link:focus-visible {
+    background: #f0f4ee;
+    border-color: #2d4a22;
+    outline: none;
+}
+
+.manager-terug-link:active {
+    transform: scale(0.97);
+}
+
+.manager-pagina-titel {
+    font-size: 1.35rem;
     font-weight: 700;
     color: #2d4a22;
     margin: 0;
@@ -1094,38 +1097,11 @@ footer {
     gap: 0.5rem;
 }
 
-.effects-manager-sluit-btn {
-    background: #f5f5f5;
-    border: none;
-    font-size: 1.4rem;
+.manager-pagina-tekst {
+    font-size: 0.9rem;
     color: #555;
-    cursor: pointer;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    transition: color 0.15s ease, background 0.15s ease, transform 0.1s ease;
-    line-height: 1;
-}
-
-.effects-manager-sluit-btn:hover {
-    color: #c0392b;
-    background: #fde8e6;
-}
-
-.effects-manager-sluit-btn:active {
-    transform: scale(0.92);
-}
-
-.effects-manager-sluit-btn:focus-visible {
-    outline: 2px solid #2d4a22;
-    outline-offset: 2px;
-}
-
-.effects-manager-subtitel {
-    font-size: 0.85rem;
-    color: #555;
-    margin-bottom: 0.85rem;
-    line-height: 1.45;
+    margin-bottom: 1.2rem;
+    line-height: 1.5;
 }
 
 .effects-manager-hint {
@@ -1133,7 +1109,7 @@ footer {
     margin-left: 0.4rem;
     color: #2d4a22;
     font-style: italic;
-    font-size: 0.78rem;
+    font-size: 0.82rem;
 }
 
 .effects-manager-toolbar {
@@ -1235,11 +1211,11 @@ footer {
 /* tabel */
 .effects-manager-tabel-wrapper {
     overflow: auto;
-    flex: 1;
+    max-height: 65vh;
     border-radius: 8px;
     border: 1px solid #e2e8e0;
     outline: none;
-    min-height: 100px;
+    min-height: 120px;
     background: #fff;
 }
 
@@ -1658,18 +1634,14 @@ footer {
 
 /* ====== Responsive ====== */
 @media (max-width: 768px) {
-    .effects-manager-panel {
-        width: 96vw;
-        max-height: 92vh;
-        border-radius: 10px;
+    .manager-pagina {
+        margin: 0.5rem 10px 1.5rem;
+        padding: 1rem;
+        border-radius: 8px;
     }
 
-    .effects-manager-inner {
-        padding: 1rem 1rem 1.15rem;
-    }
-
-    .effects-manager-titel {
-        font-size: 1.05rem;
+    .manager-pagina-titel {
+        font-size: 1.1rem;
     }
 
     .effects-manager-toolbar {
