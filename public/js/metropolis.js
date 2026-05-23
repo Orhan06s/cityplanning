@@ -309,3 +309,175 @@ document.getElementById('zoekterm').addEventListener('input', function() {
         }
     });
 })();
+
+// Effects Manager
+(function() {
+    'use strict';
+
+    var trigger = document.getElementById('effects-manager-trigger');
+    var panel = document.getElementById('effects-manager-panel');
+    var sluitBtn = document.getElementById('effects-manager-sluit');
+    var addFunctionBtn = document.getElementById('add-function-btn');
+    var tbody = document.getElementById('effects-tbody');
+
+    if (!trigger || !panel) return;
+
+    function openPanel() {
+        panel.hidden = false;
+        panel.setAttribute('aria-hidden', 'false');
+        trigger.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePanel() {
+        panel.setAttribute('aria-hidden', 'true');
+        trigger.setAttribute('aria-expanded', 'false');
+        panel.hidden = true;
+        document.body.style.overflow = '';
+    }
+
+    trigger.addEventListener('click', openPanel);
+
+    if (sluitBtn) {
+        sluitBtn.addEventListener('click', function() {
+            closePanel();
+            trigger.focus();
+        });
+    }
+
+    // Close on backdrop click
+    panel.addEventListener('click', function(e) {
+        if (e.target === panel) {
+            closePanel();
+        }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && panel.getAttribute('aria-hidden') === 'false') {
+            closePanel();
+            trigger.focus();
+        }
+    });
+
+    // Handle input changes
+    if (tbody) {
+        tbody.addEventListener('change', function(e) {
+            if (e.target.classList.contains('effect-input')) {
+                var functionName = e.target.getAttribute('data-function');
+                var category = e.target.getAttribute('data-category');
+                var points = parseInt(e.target.value, 10);
+
+                updateEffect(functionName, category, points);
+            }
+        });
+    }
+
+    // Add Function
+    if (addFunctionBtn) {
+        addFunctionBtn.addEventListener('click', function() {
+            var name = prompt('{{ __("Voer functienaam in:") }}');
+            if (!name) return;
+
+            addNewFunction(name);
+        });
+    }
+
+    // Delete Function
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('btn-delete-function')) {
+            var functionName = e.target.getAttribute('data-function');
+            if (confirm('{{ __("Verwijder deze functie?") }}')) {
+                deleteFunction(functionName);
+            }
+        }
+    });
+
+    function updateEffect(functionName, category, points) {
+        var csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch('/api/effects/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf
+            },
+            body: JSON.stringify({
+                function_name: functionName,
+                category: category,
+                points: points
+            })
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                reloadEffectsDisplay();
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert('{{ __("Fout bij opslaan!") }}');
+        });
+    }
+
+    function addNewFunction(name) {
+        var csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch('/api/effects/add-function', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf
+            },
+            body: JSON.stringify({
+                function_name: name
+            })
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert('{{ __("Fout bij toevoegen!") }}');
+        });
+    }
+
+    function deleteFunction(functionName) {
+        var csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        fetch('/api/effects/delete-function', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf
+            },
+            body: JSON.stringify({
+                function_name: functionName
+            })
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            alert('{{ __("Fout bij verwijderen!") }}');
+        });
+    }
+
+    function reloadEffectsDisplay() {
+        // Force a page reload to show updated effects
+        location.reload();
+    }
+})();

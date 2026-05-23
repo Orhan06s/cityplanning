@@ -40,5 +40,17 @@
     "Weg": "Weg",
     "Fietspad": "Fietspad",
     "Tankstation": "Tankstation",
-    "Er ging iets mis. Probeer het opnieuw.": "Er ging iets mis. Probeer het opnieuw."
+    "Er ging iets mis. Probeer het opnieuw.": "Er ging iets mis. Probeer het opnieuw.",
+    "Effecten beheren": "Effecten beheren",
+    "Pas hier de effect-waarden aan voor elke stadsfunctie per categorie.": "Pas hier de effect-waarden aan voor elke stadsfunctie per categorie.",
+    "Functie toevoegen": "Functie toevoegen",
+    "Editable effecten per stadsfunctie": "Editable effecten per stadsfunctie",
+    "Voeg nieuwe functie toe": "Voeg nieuwe functie toe",
+    "Acties": "Acties",
+    "Sluit effecten beheer": "Sluit effecten beheer",
+    "Voer functienaam in:": "Voer functienaam in:",
+    "Verwijder deze functie?": "Verwijder deze functie?",
+    "Fout bij opslaan!": "Fout bij opslaan!",
+    "Fout bij toevoegen!": "Fout bij toevoegen!",
+    "Fout bij verwijderen!": "Fout bij verwijderen!"
 }

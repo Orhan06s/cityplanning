@@ -40,5 +40,17 @@
     "Weg": "Road",
     "Fietspad": "Bike Path",
     "Tankstation": "Gas Station",
-    "Er ging iets mis. Probeer het opnieuw.": "Something went wrong. Please try again."
+    "Er ging iets mis. Probeer het opnieuw.": "Something went wrong. Please try again.",
+    "Effecten beheren": "Manage Effects",
+    "Pas hier de effect-waarden aan voor elke stadsfunctie per categorie.": "Adjust the effect values here for each city function per category.",
+    "Functie toevoegen": "Add Function",
+    "Editable effecten per stadsfunctie": "Editable effects per city function",
+    "Voeg nieuwe functie toe": "Add new function",
+    "Acties": "Actions",
+    "Sluit effecten beheer": "Close effects manager",
+    "Voer functienaam in:": "Enter function name:",
+    "Verwijder deze functie?": "Delete this function?",
+    "Fout bij opslaan!": "Error saving!",
+    "Fout bij toevoegen!": "Error adding!",
+    "Fout bij verwijderen!": "Error deleting!"
 }

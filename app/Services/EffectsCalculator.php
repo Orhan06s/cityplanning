@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\FunctionEffect;
+
 class EffectsCalculator
 {
     private $categories;
@@ -10,6 +12,19 @@ class EffectsCalculator
     public function __construct(?array $matrix = null)
     {
         if ($matrix === null) {
+            // Try to load from database first
+            try {
+                $effects = FunctionEffect::all();
+                if ($effects->isNotEmpty()) {
+                    $this->functions = FunctionEffect::getMatrixByFunction();
+                    $this->categories = config('effects.categories');
+                    return;
+                }
+            } catch (\Exception $e) {
+                // Fall back to config if database is not ready
+            }
+
+            // Fall back to config
             $matrix = [
                 'categories' => config('effects.categories'),
                 'functions'  => config('effects.functions'),

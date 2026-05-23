@@ -10,6 +10,7 @@
         <h2>{{ __('Functiebibliotheek') }}</h2>
         @include('partials.library')
         @include('partials.effects')
+        @include('partials.effects-manager')
     </div>
 
     <div class="grid-wrapper">

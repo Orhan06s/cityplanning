@@ -2,10 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetropolisController;
+use App\Http\Controllers\EffectsController;
 
 Route::get('/', [MetropolisController::class, 'index'])->name('home');
 Route::post('/place', [MetropolisController::class, 'place'])->name('place');
 Route::post('/remove', [MetropolisController::class, 'remove'])->name('remove');
+
+// Effects Manager
+Route::get('/api/effects-manager', [EffectsController::class, 'getManager']);
+Route::post('/api/effects/update', [EffectsController::class, 'updateEffect']);
+Route::post('/api/effects/add-function', [EffectsController::class, 'addFunction']);
+Route::post('/api/effects/delete-function', [EffectsController::class, 'deleteFunction']);
 
 // Taal wisselen
 Route::get('/taal/{lang}', function($lang) {
