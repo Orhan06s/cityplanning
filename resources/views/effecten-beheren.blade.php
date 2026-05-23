@@ -28,6 +28,16 @@
             <span aria-hidden="true">+</span> {{ __('Functie toevoegen') }}
         </button>
 
+        <button
+            id="reset-defaults-btn"
+            class="btn btn-reset"
+            type="button"
+            aria-label="{{ __('Reset alle effecten naar standaardwaarden') }}"
+            title="{{ __('Herstel alle effecten naar de standaardwaarden uit config/effects.php') }}"
+        >
+            <span aria-hidden="true">↻</span> {{ __('Reset naar defaults') }}
+        </button>
+
         <div class="effects-manager-zoek">
             <input
                 type="text"
@@ -138,6 +148,31 @@
                 <button type="submit" class="btn btn-add">{{ __('Toevoegen') }}</button>
             </div>
         </form>
+    </div>
+</div>
+
+{{-- Submodal: reset naar defaults bevestiging --}}
+<div
+    id="reset-defaults-modal"
+    class="submodal"
+    role="alertdialog"
+    aria-labelledby="reset-defaults-titel"
+    aria-hidden="true"
+    aria-modal="true"
+    hidden
+>
+    <div class="submodal-inner">
+        <h3 id="reset-defaults-titel" class="submodal-titel">{{ __('Reset naar standaardwaarden?') }}</h3>
+        <p class="submodal-tekst">
+            {{ __('Dit verwijdert alle huidige effect-waarden en herstelt ze naar de defaults.') }}
+            <br><br>
+            <strong>{{ __('Eigen aanpassingen gaan verloren!') }}</strong>
+        </p>
+
+        <div class="submodal-knoppen">
+            <button type="button" class="btn btn-cancel" data-close-submodal>{{ __('Annuleer') }}</button>
+            <button type="button" id="reset-defaults-bevestig" class="btn btn-danger">{{ __('Ja, reset') }}</button>
+        </div>
     </div>
 </div>
 

@@ -1269,6 +1269,17 @@ footer {
     box-shadow: 0 3px 10px rgba(192, 57, 43, 0.3);
 }
 
+.btn-reset {
+    background: #d9a635;
+    color: #fff;
+}
+
+.btn-reset:hover:not(:disabled),
+.btn-reset:focus-visible {
+    background: #b88a20;
+    box-shadow: 0 3px 10px rgba(217, 166, 53, 0.3);
+}
+
 .btn:focus-visible {
     outline: 3px solid rgba(45, 74, 34, 0.35);
     outline-offset: 2px;

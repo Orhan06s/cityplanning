@@ -35,10 +35,12 @@ class EffectsCalculator
     }
 
     /**
-     * Vult de function_effects tabel met de waarden uit config/effects.php
-     * als er nog geen "echte" data is. Veilig om elke request aan te roepen:
-     * als er ook maar één row met points != 0 in een geldige categorie staat,
-     * doen we niets (zo blijven user-customizations behouden).
+     * Vult function_effects met config-waarden als de data "kapot" is:
+     * - tabel leeg, OF
+     * - minder dan 10 rijen met juiste categorie + non-zero punten
+     *   (default config heeft ~50 non-zero rows; <10 = duidelijk verkeerde data)
+     *
+     * Gebruikt force delete + raw insert om foreign-key/cascade issues te omzeilen.
      */
     public static function ensureSeeded(): void
     {
@@ -49,25 +51,33 @@ class EffectsCalculator
             return;
         }
 
-        $hasRealData = FunctionEffect::whereIn('category', $categories)
+        $nonZeroCount = FunctionEffect::whereIn('category', $categories)
             ->where('points', '!=', 0)
-            ->exists();
+            ->count();
 
-        if ($hasRealData) {
+        // Genoeg bruikbare data → niet aanraken (respecteert user customizations)
+        if ($nonZeroCount >= 10) {
             return;
         }
 
-        // Geen bruikbare data — wipe en herseed uit config
-        FunctionEffect::truncate();
+        // Data is leeg of helemaal kapot → wipe + herbouwen uit config
+        \DB::table('function_effects')->delete();
+
+        $now  = now();
+        $rows = [];
         foreach ($functions as $functionName => $effects) {
             foreach ($effects as $category => $points) {
-                FunctionEffect::create([
+                $rows[] = [
                     'function_name' => $functionName,
                     'category'      => $category,
                     'points'        => $points,
-                ]);
+                    'created_at'    => $now,
+                    'updated_at'    => $now,
+                ];
             }
         }
+
+        \DB::table('function_effects')->insert($rows);
     }
 
     public function calculate($gridCells)

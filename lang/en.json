@@ -67,5 +67,14 @@
     ":count functies": ":count functions",
     "Fout bij opslaan!": "Error saving!",
     "Fout bij toevoegen!": "Error adding!",
-    "Fout bij verwijderen!": "Error deleting!"
+    "Fout bij verwijderen!": "Error deleting!",
+    "Reset naar defaults": "Reset to defaults",
+    "Reset alle effecten naar standaardwaarden": "Reset all effects to defaults",
+    "Herstel alle effecten naar de standaardwaarden uit config/effects.php": "Restore all effects to the defaults from config/effects.php",
+    "Reset naar standaardwaarden?": "Reset to defaults?",
+    "Dit verwijdert alle huidige effect-waarden en herstelt ze naar de defaults.": "This deletes all current effect values and restores them to defaults.",
+    "Eigen aanpassingen gaan verloren!": "Custom changes will be lost!",
+    "Ja, reset": "Yes, reset",
+    "Effecten gereset naar standaardwaarden!": "Effects reset to defaults!",
+    "Fout bij resetten.": "Error resetting."
 }

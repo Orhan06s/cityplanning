@@ -13,6 +13,7 @@ Route::get('/effecten-beheren', [EffectsController::class, 'page'])->name('effec
 Route::post('/api/effects/update', [EffectsController::class, 'updateEffect']);
 Route::post('/api/effects/add-function', [EffectsController::class, 'addFunction']);
 Route::post('/api/effects/delete-function', [EffectsController::class, 'deleteFunction']);
+Route::post('/api/effects/reset-defaults', [EffectsController::class, 'resetToDefaults']);
 
 // Taal wisselen
 Route::get('/taal/{lang}', function($lang) {

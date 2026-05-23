@@ -330,6 +330,9 @@ document.getElementById('zoekterm').addEventListener('input', function() {
     var deleteModal      = document.getElementById('delete-function-modal');
     var deleteNaamSpan   = document.getElementById('delete-function-naam');
     var deleteBevestig   = document.getElementById('delete-function-bevestig');
+    var resetBtn         = document.getElementById('reset-defaults-btn');
+    var resetModal       = document.getElementById('reset-defaults-modal');
+    var resetBevestig    = document.getElementById('reset-defaults-bevestig');
     var toastContainer   = document.getElementById('toast-container');
 
     var deleteTargetFunction = null;
@@ -345,6 +348,7 @@ document.getElementById('zoekterm').addEventListener('input', function() {
         if (e.key !== 'Escape') return;
         if (addModal && !addModal.hidden) { closeSubmodal(addModal); return; }
         if (deleteModal && !deleteModal.hidden) { closeSubmodal(deleteModal); return; }
+        if (resetModal && !resetModal.hidden) { closeSubmodal(resetModal); return; }
     });
 
     // ============ Submodal helpers ============
@@ -369,12 +373,45 @@ document.getElementById('zoekterm').addEventListener('input', function() {
     });
 
     // klik buiten submodal-inner sluit modal
-    [addModal, deleteModal].forEach(function(modal) {
+    [addModal, deleteModal, resetModal].forEach(function(modal) {
         if (!modal) return;
         modal.addEventListener('click', function(e) {
             if (e.target === modal) closeSubmodal(modal);
         });
     });
+
+    // ============ Reset naar defaults ============
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            openSubmodal(resetModal, resetBevestig);
+        });
+    }
+
+    if (resetBevestig) {
+        resetBevestig.addEventListener('click', function() {
+            resetBevestig.disabled = true;
+            fetch('/api/effects/reset-defaults', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken()
+                }
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (!data.success) throw data;
+                showToast(i18n.resetDone || 'Reset gedaan, herladen...', 'success');
+                closeSubmodal(resetModal);
+                setTimeout(function() { location.reload(); }, 700);
+            })
+            .catch(function(err) {
+                console.error('Reset error:', err);
+                showToast(i18n.resetError || 'Fout bij reset', 'error');
+                resetBevestig.disabled = false;
+            });
+        });
+    }
 
     // ============ Inline edit (debounced save) ============
     if (tbody) {

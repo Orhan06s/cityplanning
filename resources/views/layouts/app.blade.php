@@ -78,6 +78,8 @@
             noResults: @json(__('Geen functies gevonden.')),
             functionCount: @json(__(':count functies')),
             delete: @json(__('Verwijder')),
+            resetDone: @json(__('Effecten gereset naar standaardwaarden!')),
+            resetError: @json(__('Fout bij resetten.')),
         };
     </script>
     <script src="{{ asset('js/metropolis.js') }}?v={{ filemtime(public_path('js/metropolis.js')) }}"></script>

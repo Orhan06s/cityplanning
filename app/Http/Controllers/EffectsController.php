@@ -96,6 +96,36 @@ class EffectsController extends Controller
         ]);
     }
 
+    /**
+     * Nukes function_effects en herbouwt vanuit config/effects.php.
+     * Gebruik dit als de data corrupt of helemaal verkeerd staat.
+     */
+    public function resetToDefaults()
+    {
+        \DB::table('function_effects')->delete();
+
+        $functions = config('effects.functions', []);
+        $now = now();
+        $rows = [];
+        foreach ($functions as $functionName => $effects) {
+            foreach ($effects as $category => $points) {
+                $rows[] = [
+                    'function_name' => $functionName,
+                    'category'      => $category,
+                    'points'        => $points,
+                    'created_at'    => $now,
+                    'updated_at'    => $now,
+                ];
+            }
+        }
+        \DB::table('function_effects')->insert($rows);
+
+        return response()->json([
+            'success' => true,
+            'totals'  => $this->recalculateTotals(),
+        ]);
+    }
+
     private function recalculateTotals()
     {
         $gridCells  = GridCell::with('destination')->get();
