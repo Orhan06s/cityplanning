@@ -192,23 +192,29 @@ function verwijderCel(cellId) {
     form.submit();
 }
 
-// Zoeken
-document.getElementById('zoekterm').addEventListener('input', function() {
-    var zoekterm = this.value.toLowerCase();
-    var zichtbaar = 0;
+// Zoeken in functiebibliotheek (alleen op hoofdpagina)
+var zoektermInput = document.getElementById('zoekterm');
+if (zoektermInput) {
+    zoektermInput.addEventListener('input', function() {
+        var zoekterm = this.value.toLowerCase();
+        var zichtbaar = 0;
 
-    document.querySelectorAll('.library-item').forEach(function(item) {
-        var naam = item.getAttribute('data-name').toLowerCase();
-        if (naam.includes(zoekterm)) {
-            item.style.display = '';
-            zichtbaar++;
-        } else {
-            item.style.display = 'none';
+        document.querySelectorAll('.library-item').forEach(function(item) {
+            var naam = item.getAttribute('data-name').toLowerCase();
+            if (naam.includes(zoekterm)) {
+                item.style.display = '';
+                zichtbaar++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        var geenResultaten = document.getElementById('geen-resultaten');
+        if (geenResultaten) {
+            geenResultaten.style.display = zichtbaar === 0 ? 'block' : 'none';
         }
     });
-
-    document.getElementById('geen-resultaten').style.display = zichtbaar === 0 ? 'block' : 'none';
-});
+}
 
 // Effectenmatrix openen/sluiten via hover en klik
 (function() {
