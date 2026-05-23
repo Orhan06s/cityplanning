@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\FunctionEffect;
+use Illuminate\Support\Facades\DB;
 
 class EffectsCalculator
 {
@@ -61,7 +62,7 @@ class EffectsCalculator
         }
 
         // Data is leeg of helemaal kapot → wipe + herbouwen uit config
-        \DB::table('function_effects')->delete();
+        DB::table('function_effects')->delete();
 
         $now  = now();
         $rows = [];
@@ -77,7 +78,7 @@ class EffectsCalculator
             }
         }
 
-        \DB::table('function_effects')->insert($rows);
+        DB::table('function_effects')->insert($rows);
     }
 
     public function calculate($gridCells)

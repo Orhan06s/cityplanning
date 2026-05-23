@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\FunctionEffect;
 use App\Models\GridCell;
 use App\Services\EffectsCalculator;
@@ -102,7 +103,7 @@ class EffectsController extends Controller
      */
     public function resetToDefaults()
     {
-        \DB::table('function_effects')->delete();
+        DB::table('function_effects')->delete();
 
         $functions = config('effects.functions', []);
         $now = now();
@@ -118,7 +119,7 @@ class EffectsController extends Controller
                 ];
             }
         }
-        \DB::table('function_effects')->insert($rows);
+        DB::table('function_effects')->insert($rows);
 
         return response()->json([
             'success' => true,
