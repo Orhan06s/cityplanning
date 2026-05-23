@@ -10,7 +10,7 @@
 
 <div class="totalen-paneel" role="region" aria-label="{{ __('Effectenmatrix') }}">
     <div class="totalen-titel">{{ __('Effecten per stadsfunctie en categorie') }}</div>
-    <div class="totalen-grid">
+    <div class="totalen-grid" id="totalen-grid">
         @foreach($categories as $cat)
             @php
                 $score   = $effecten[$cat] ?? 0;
@@ -18,9 +18,9 @@
                 $teken   = $score > 0 ? "+{$score}" : (string) $score;
                 $label   = $catLabels[$cat] ?? $cat;
             @endphp
-            <div class="totaal-kaart {{ $klasse }}">
+            <div class="totaal-kaart {{ $klasse }}" data-category="{{ $cat }}">
                 <span class="totaal-label">{{ $label }}</span>
-                <span class="totaal-score">{{ $teken }}</span>
+                <span class="totaal-score" data-score>{{ $teken }}</span>
             </div>
         @endforeach
     </div>

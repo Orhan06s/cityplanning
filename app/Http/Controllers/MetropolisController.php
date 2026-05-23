@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Destination;
 use App\Models\GridCell;
+use App\Models\FunctionEffect;
 use App\Services\EffectsCalculator;
 
 class MetropolisController extends Controller
@@ -21,11 +22,16 @@ class MetropolisController extends Controller
         $effecten   = $calculator->calculate($gridCells);
         $categories = $calculator->getCategories();
 
+        // Effects manager data
+        $effects = FunctionEffect::orderBy('function_name')->orderBy('category')->get();
+        $groupedByFunction = $effects->groupBy('function_name');
+
         return view('metropolis', [
             'destinationsByCategory' => $destinationsByCategory,
             'gridCells'              => $gridCells,
             'effecten'               => $effecten,
             'categories'             => $categories,
+            'groupedByFunction'      => $groupedByFunction,
         ]);
     }
 

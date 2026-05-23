@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\FunctionEffect;
+use App\Models\GridCell;
 use App\Services\EffectsCalculator;
 
 class EffectsController extends Controller
@@ -38,27 +39,40 @@ class EffectsController extends Controller
             ['points' => $validated['points']]
         );
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'totals'  => $this->recalculateTotals(),
+        ]);
     }
 
     public function addFunction(Request $request)
     {
         $validated = $request->validate([
-            'function_name' => 'required|string|unique:function_effects,function_name',
+            'function_name' => 'required|string|max:50|unique:function_effects,function_name',
         ]);
+
+        $name = trim($validated['function_name']);
 
         $calculator = new EffectsCalculator();
         $categories = $calculator->getCategories();
 
+        $rowEffects = [];
         foreach ($categories as $category) {
-            FunctionEffect::create([
-                'function_name' => $validated['function_name'],
+            $effect = FunctionEffect::create([
+                'function_name' => $name,
                 'category'      => $category,
                 'points'        => 0,
             ]);
+            $rowEffects[$category] = $effect->points;
         }
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success'       => true,
+            'function_name' => $name,
+            'categories'    => $categories,
+            'effects'       => $rowEffects,
+            'totals'        => $this->recalculateTotals(),
+        ]);
     }
 
     public function deleteFunction(Request $request)
@@ -69,6 +83,16 @@ class EffectsController extends Controller
 
         FunctionEffect::where('function_name', $validated['function_name'])->delete();
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'totals'  => $this->recalculateTotals(),
+        ]);
+    }
+
+    private function recalculateTotals()
+    {
+        $gridCells  = GridCell::with('destination')->get();
+        $calculator = new EffectsCalculator();
+        return $calculator->calculate($gridCells);
     }
 }

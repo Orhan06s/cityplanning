@@ -310,174 +310,472 @@ document.getElementById('zoekterm').addEventListener('input', function() {
     });
 })();
 
-// Effects Manager
+// Effects Manager — live editing, debounced save, geen page reload
 (function() {
     'use strict';
 
-    var trigger = document.getElementById('effects-manager-trigger');
-    var panel = document.getElementById('effects-manager-panel');
-    var sluitBtn = document.getElementById('effects-manager-sluit');
-    var addFunctionBtn = document.getElementById('add-function-btn');
-    var tbody = document.getElementById('effects-tbody');
+    var i18n = window.metroI18n || {};
+
+    var trigger          = document.getElementById('effects-manager-trigger');
+    var panel            = document.getElementById('effects-manager-panel');
+    var backdrop         = document.getElementById('effects-manager-backdrop');
+    var sluitBtn         = document.getElementById('effects-manager-sluit');
+    var addFunctionBtn   = document.getElementById('add-function-btn');
+    var tbody            = document.getElementById('effects-tbody');
+    var stats            = document.getElementById('effects-manager-stats');
+    var zoekInput        = document.getElementById('effects-manager-zoek-input');
+    var totalenGrid      = document.getElementById('totalen-grid');
+    var addModal         = document.getElementById('add-function-modal');
+    var addForm          = document.getElementById('add-function-form');
+    var addInput         = document.getElementById('add-function-input');
+    var addFout          = document.getElementById('add-function-fout');
+    var deleteModal      = document.getElementById('delete-function-modal');
+    var deleteNaamSpan   = document.getElementById('delete-function-naam');
+    var deleteBevestig   = document.getElementById('delete-function-bevestig');
+    var toastContainer   = document.getElementById('toast-container');
 
     if (!trigger || !panel) return;
 
+    var deleteTargetFunction = null;
+    var saveTimers = {};      // debounce per input
+    var savedStatusTimers = {}; // hide "saved" indicator after delay
+
+    function csrfToken() {
+        var meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
+
+    // ============ Hoofdpaneel open/dicht ============
     function openPanel() {
         panel.hidden = false;
+        backdrop.hidden = false;
+        // force reflow voor smooth fade-in
+        void panel.offsetWidth;
         panel.setAttribute('aria-hidden', 'false');
+        backdrop.classList.add('is-visible');
         trigger.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
+        updateStats();
     }
 
     function closePanel() {
+        if (panel.hidden) return;
         panel.setAttribute('aria-hidden', 'true');
+        backdrop.classList.remove('is-visible');
         trigger.setAttribute('aria-expanded', 'false');
-        panel.hidden = true;
         document.body.style.overflow = '';
+        // wacht op transitie
+        setTimeout(function() {
+            panel.hidden = true;
+            backdrop.hidden = true;
+        }, 200);
+        closeSubmodal(addModal);
+        closeSubmodal(deleteModal);
     }
 
     trigger.addEventListener('click', openPanel);
+    if (sluitBtn) sluitBtn.addEventListener('click', function() { closePanel(); trigger.focus(); });
+    backdrop.addEventListener('click', closePanel);
 
-    if (sluitBtn) {
-        sluitBtn.addEventListener('click', function() {
-            closePanel();
-            trigger.focus();
-        });
-    }
-
-    // Close on backdrop click
-    panel.addEventListener('click', function(e) {
-        if (e.target === panel) {
-            closePanel();
-        }
-    });
-
-    // Close on Escape
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && panel.getAttribute('aria-hidden') === 'false') {
-            closePanel();
-            trigger.focus();
-        }
+        if (e.key !== 'Escape') return;
+        if (!addModal.hidden) { closeSubmodal(addModal); return; }
+        if (!deleteModal.hidden) { closeSubmodal(deleteModal); return; }
+        if (!panel.hidden) { closePanel(); trigger.focus(); }
     });
 
-    // Handle input changes
+    // ============ Submodal helpers ============
+    function openSubmodal(modal, focusEl) {
+        modal.hidden = false;
+        void modal.offsetWidth;
+        modal.setAttribute('aria-hidden', 'false');
+        if (focusEl) setTimeout(function() { focusEl.focus(); }, 50);
+    }
+
+    function closeSubmodal(modal) {
+        if (!modal || modal.hidden) return;
+        modal.setAttribute('aria-hidden', 'true');
+        setTimeout(function() { modal.hidden = true; }, 180);
+    }
+
+    document.querySelectorAll('[data-close-submodal]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var modal = btn.closest('.submodal');
+            closeSubmodal(modal);
+        });
+    });
+
+    // klik buiten submodal-inner sluit modal
+    [addModal, deleteModal].forEach(function(modal) {
+        if (!modal) return;
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeSubmodal(modal);
+        });
+    });
+
+    // ============ Inline edit (debounced save) ============
     if (tbody) {
-        tbody.addEventListener('change', function(e) {
-            if (e.target.classList.contains('effect-input')) {
-                var functionName = e.target.getAttribute('data-function');
-                var category = e.target.getAttribute('data-category');
-                var points = parseInt(e.target.value, 10);
-
-                updateEffect(functionName, category, points);
-            }
+        tbody.addEventListener('input', function(e) {
+            if (!e.target.classList.contains('effect-input')) return;
+            handleInputChange(e.target);
         });
     }
 
-    // Add Function
-    if (addFunctionBtn) {
-        addFunctionBtn.addEventListener('click', function() {
-            var name = prompt('{{ __("Voer functienaam in:") }}');
-            if (!name) return;
+    function handleInputChange(input) {
+        var fnName   = input.getAttribute('data-function');
+        var category = input.getAttribute('data-category');
+        var key      = fnName + '|' + category;
+        var raw      = input.value;
 
-            addNewFunction(name);
-        });
-    }
+        // toon "saving" status onmiddellijk
+        setInputStatus(input, 'saving');
 
-    // Delete Function
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('btn-delete-function')) {
-            var functionName = e.target.getAttribute('data-function');
-            if (confirm('{{ __("Verwijder deze functie?") }}')) {
-                deleteFunction(functionName);
-            }
+        // clamp tussen -5 en 5
+        if (raw === '' || raw === '-') return;
+        var points = parseInt(raw, 10);
+        if (isNaN(points)) {
+            setInputStatus(input, 'error');
+            return;
         }
-    });
+        if (points < -5) points = -5;
+        if (points > 5)  points = 5;
+        if (String(points) !== raw && raw !== '-') input.value = points;
 
-    function updateEffect(functionName, category, points) {
-        var csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        // debounce: wacht 400ms na laatste keystroke voor server save
+        clearTimeout(saveTimers[key]);
+        saveTimers[key] = setTimeout(function() {
+            saveEffect(input, fnName, category, points);
+        }, 400);
+    }
 
+    function saveEffect(input, fnName, category, points) {
         fetch('/api/effects/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrf
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken()
             },
             body: JSON.stringify({
-                function_name: functionName,
+                function_name: fnName,
                 category: category,
                 points: points
             })
         })
-        .then(function(response) {
-            return response.json();
+        .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
         })
         .then(function(data) {
-            if (data.success) {
-                reloadEffectsDisplay();
-            }
+            if (!data.success) throw new Error('Server zei nee');
+            input.setAttribute('data-initial', points);
+            setInputStatus(input, 'saved');
+            if (data.totals) updateTotalen(data.totals);
         })
-        .catch(function(error) {
-            console.error('Error:', error);
-            alert('{{ __("Fout bij opslaan!") }}');
+        .catch(function(err) {
+            console.error('Save error:', err);
+            setInputStatus(input, 'error');
+            showToast(i18n.saveError || 'Save error', 'error');
         });
     }
 
-    function addNewFunction(name) {
-        var csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    function setInputStatus(input, status) {
+        var wrap = input.closest('.effect-input-wrap');
+        if (!wrap) return;
+        wrap.setAttribute('data-status', status);
+
+        var key = input.getAttribute('data-function') + '|' + input.getAttribute('data-category');
+        clearTimeout(savedStatusTimers[key]);
+
+        if (status === 'saved') {
+            // verberg de "saved" indicator na 1.5s
+            savedStatusTimers[key] = setTimeout(function() {
+                if (wrap.getAttribute('data-status') === 'saved') {
+                    wrap.setAttribute('data-status', 'idle');
+                }
+            }, 1500);
+        }
+    }
+
+    // ============ Live totalen update ============
+    function updateTotalen(totals) {
+        if (!totalenGrid) return;
+        Object.keys(totals).forEach(function(category) {
+            var kaart = totalenGrid.querySelector('[data-category="' + category + '"]');
+            if (!kaart) return;
+            var score = totals[category];
+            var scoreEl = kaart.querySelector('[data-score]');
+            if (!scoreEl) return;
+
+            var teken = score > 0 ? '+' + score : String(score);
+            scoreEl.textContent = teken;
+
+            kaart.classList.remove('totaal-positief', 'totaal-negatief', 'totaal-neutraal');
+            if (score > 0)      kaart.classList.add('totaal-positief');
+            else if (score < 0) kaart.classList.add('totaal-negatief');
+            else                kaart.classList.add('totaal-neutraal');
+
+            // pulse-animatie
+            kaart.classList.remove('totaal-pulse');
+            void kaart.offsetWidth;
+            kaart.classList.add('totaal-pulse');
+        });
+    }
+
+    // ============ Functie toevoegen ============
+    if (addFunctionBtn) {
+        addFunctionBtn.addEventListener('click', function() {
+            addInput.value = '';
+            hideFormError();
+            openSubmodal(addModal, addInput);
+        });
+    }
+
+    if (addForm) {
+        addForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var name = addInput.value.trim();
+            if (!name) { showFormError(i18n.nameRequired); return; }
+            if (name.length > 50) { showFormError(i18n.nameTooLong); return; }
+            submitAddFunction(name);
+        });
+    }
+
+    function showFormError(msg) {
+        addFout.textContent = msg;
+        addFout.hidden = false;
+        addInput.setAttribute('aria-invalid', 'true');
+    }
+
+    function hideFormError() {
+        addFout.hidden = true;
+        addFout.textContent = '';
+        addInput.removeAttribute('aria-invalid');
+    }
+
+    function submitAddFunction(name) {
+        var submitBtn = addForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
 
         fetch('/api/effects/add-function', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrf
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken()
             },
-            body: JSON.stringify({
-                function_name: name
-            })
+            body: JSON.stringify({ function_name: name })
         })
-        .then(function(response) {
-            return response.json();
+        .then(function(res) {
+            return res.json().then(function(data) {
+                if (!res.ok) throw data;
+                return data;
+            });
         })
         .then(function(data) {
-            if (data.success) {
-                location.reload();
+            if (!data.success) throw data;
+            appendNewRow(data);
+            if (data.totals) updateTotalen(data.totals);
+            closeSubmodal(addModal);
+            showToast((i18n.functionAdded || 'Toegevoegd') + ' "' + name + '"', 'success');
+            updateStats();
+        })
+        .catch(function(err) {
+            console.error('Add error:', err);
+            if (err && err.errors && err.errors.function_name) {
+                showFormError(i18n.nameExists);
+            } else {
+                showFormError(i18n.addError);
             }
         })
-        .catch(function(error) {
-            console.error('Error:', error);
-            alert('{{ __("Fout bij toevoegen!") }}');
+        .finally(function() {
+            submitBtn.disabled = false;
         });
     }
 
-    function deleteFunction(functionName) {
-        var csrf = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    function appendNewRow(data) {
+        var emptyRow = document.getElementById('effects-empty-row');
+        if (emptyRow) emptyRow.remove();
+
+        var tr = document.createElement('tr');
+        tr.className = 'effects-row effects-row-nieuw';
+        tr.setAttribute('role', 'row');
+        tr.setAttribute('data-function', data.function_name);
+
+        var naamTd = document.createElement('td');
+        naamTd.className = 'td-functienaam';
+        naamTd.textContent = data.function_name;
+        tr.appendChild(naamTd);
+
+        data.categories.forEach(function(cat) {
+            var td = document.createElement('td');
+            td.className = 'td-points';
+            td.setAttribute('role', 'cell');
+
+            var wrap = document.createElement('div');
+            wrap.className = 'effect-input-wrap';
+            wrap.setAttribute('data-status', 'idle');
+
+            var input = document.createElement('input');
+            input.type = 'number';
+            input.className = 'effect-input';
+            input.value = data.effects[cat];
+            input.min = '-5';
+            input.max = '5';
+            input.step = '1';
+            input.setAttribute('data-function', data.function_name);
+            input.setAttribute('data-category', cat);
+            input.setAttribute('data-initial', data.effects[cat]);
+            input.setAttribute('aria-label', data.function_name + ' - ' + cat);
+
+            var status = document.createElement('span');
+            status.className = 'effect-status';
+            status.setAttribute('aria-hidden', 'true');
+
+            wrap.appendChild(input);
+            wrap.appendChild(status);
+            td.appendChild(wrap);
+            tr.appendChild(td);
+        });
+
+        var actiesTd = document.createElement('td');
+        actiesTd.className = 'td-actions';
+        var delBtn = document.createElement('button');
+        delBtn.className = 'btn-delete-function';
+        delBtn.setAttribute('data-function', data.function_name);
+        delBtn.setAttribute('type', 'button');
+        delBtn.setAttribute('aria-label', (i18n.delete || 'Verwijder') + ' ' + data.function_name);
+        delBtn.title = (i18n.delete || 'Verwijder') + ' ' + data.function_name;
+        delBtn.textContent = '🗑️';
+        actiesTd.appendChild(delBtn);
+        tr.appendChild(actiesTd);
+
+        tbody.appendChild(tr);
+    }
+
+    // ============ Functie verwijderen ============
+    document.addEventListener('click', function(e) {
+        var btn = e.target.closest('.btn-delete-function');
+        if (!btn) return;
+        deleteTargetFunction = btn.getAttribute('data-function');
+        deleteNaamSpan.textContent = deleteTargetFunction;
+        openSubmodal(deleteModal, deleteBevestig);
+    });
+
+    if (deleteBevestig) {
+        deleteBevestig.addEventListener('click', function() {
+            if (!deleteTargetFunction) return;
+            submitDeleteFunction(deleteTargetFunction);
+        });
+    }
+
+    function submitDeleteFunction(name) {
+        deleteBevestig.disabled = true;
 
         fetch('/api/effects/delete-function', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrf
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrfToken()
             },
-            body: JSON.stringify({
-                function_name: functionName
-            })
+            body: JSON.stringify({ function_name: name })
         })
-        .then(function(response) {
-            return response.json();
-        })
+        .then(function(res) { return res.json(); })
         .then(function(data) {
-            if (data.success) {
-                location.reload();
+            if (!data.success) throw data;
+            var row = tbody.querySelector('tr[data-function="' + cssEscape(name) + '"]');
+            if (row) {
+                row.classList.add('effects-row-verwijderd');
+                setTimeout(function() {
+                    row.remove();
+                    showEmptyIfNeeded();
+                    updateStats();
+                }, 220);
             }
+            if (data.totals) updateTotalen(data.totals);
+            closeSubmodal(deleteModal);
+            showToast((i18n.functionDeleted || 'Verwijderd') + ' "' + name + '"', 'success');
+            deleteTargetFunction = null;
         })
-        .catch(function(error) {
-            console.error('Error:', error);
-            alert('{{ __("Fout bij verwijderen!") }}');
+        .catch(function(err) {
+            console.error('Delete error:', err);
+            showToast(i18n.deleteError || 'Delete error', 'error');
+        })
+        .finally(function() {
+            deleteBevestig.disabled = false;
         });
     }
 
-    function reloadEffectsDisplay() {
-        // Force a page reload to show updated effects
-        location.reload();
+    function cssEscape(value) {
+        if (window.CSS && CSS.escape) return CSS.escape(value);
+        return String(value).replace(/["\\]/g, '\\$&');
     }
+
+    function showEmptyIfNeeded() {
+        if (tbody.querySelector('.effects-row')) return;
+        if (document.getElementById('effects-empty-row')) return;
+        var cols = panel.querySelectorAll('thead th').length;
+        var tr = document.createElement('tr');
+        tr.id = 'effects-empty-row';
+        var td = document.createElement('td');
+        td.colSpan = cols;
+        td.className = 'effects-empty';
+        td.textContent = i18n.noResults || 'Geen resultaten';
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+    }
+
+    // ============ Zoek in beheer ============
+    if (zoekInput) {
+        zoekInput.addEventListener('input', function() {
+            var term = zoekInput.value.toLowerCase().trim();
+            var rows = tbody.querySelectorAll('.effects-row');
+            var zichtbaar = 0;
+            rows.forEach(function(row) {
+                var naam = (row.getAttribute('data-function') || '').toLowerCase();
+                if (!term || naam.indexOf(term) !== -1) {
+                    row.style.display = '';
+                    zichtbaar++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            updateStats(zichtbaar, rows.length);
+        });
+    }
+
+    function updateStats(zichtbaar, totaal) {
+        if (!stats) return;
+        var rows = tbody.querySelectorAll('.effects-row');
+        if (typeof totaal === 'undefined') totaal = rows.length;
+        if (typeof zichtbaar === 'undefined') zichtbaar = totaal;
+
+        var template = i18n.functionCount || ':count functies';
+        if (zichtbaar === totaal) {
+            stats.textContent = template.replace(':count', totaal);
+        } else {
+            stats.textContent = zichtbaar + ' / ' + template.replace(':count', totaal);
+        }
+    }
+
+    // ============ Toast notifications ============
+    function showToast(message, type) {
+        if (!toastContainer) return;
+        var toast = document.createElement('div');
+        toast.className = 'toast toast-' + (type || 'info');
+        toast.setAttribute('role', 'status');
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+        // fade in
+        void toast.offsetWidth;
+        toast.classList.add('toast-zichtbaar');
+        // auto verwijderen
+        setTimeout(function() {
+            toast.classList.remove('toast-zichtbaar');
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 2800);
+    }
+
+    updateStats();
 })();

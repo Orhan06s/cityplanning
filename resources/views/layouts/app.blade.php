@@ -49,6 +49,23 @@
         <p>Metropolis Simulator &copy; {{ date('Y') }}</p>
     </footer>
 
+    <script>
+        window.metroI18n = {
+            saved: @json(__('Opgeslagen')),
+            saving: @json(__('Opslaan...')),
+            saveError: @json(__('Fout bij opslaan!')),
+            addError: @json(__('Fout bij toevoegen!')),
+            deleteError: @json(__('Fout bij verwijderen!')),
+            nameRequired: @json(__('Voer een naam in.')),
+            nameExists: @json(__('Deze functie bestaat al.')),
+            nameTooLong: @json(__('Naam is te lang (max 50 tekens).')),
+            functionAdded: @json(__('Functie toegevoegd!')),
+            functionDeleted: @json(__('Functie verwijderd!')),
+            noResults: @json(__('Geen functies gevonden.')),
+            functionCount: @json(__(':count functies')),
+            delete: @json(__('Verwijder')),
+        };
+    </script>
     <script src="{{ asset('js/metropolis.js') }}?v={{ filemtime(public_path('js/metropolis.js')) }}"></script>
 </body>
 </html>
