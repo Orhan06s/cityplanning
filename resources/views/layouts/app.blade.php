@@ -80,6 +80,8 @@
             delete: @json(__('Verwijder')),
             resetDone: @json(__('Effecten gereset naar standaardwaarden!')),
             resetError: @json(__('Fout bij resetten.')),
+            invalidNumber: @json(__('Ongeldig getal')),
+            rangeError: @json(__('Waarde moet tussen -5 en 5 zijn')),
         };
     </script>
     <script src="{{ asset('js/metropolis.js') }}?v={{ filemtime(public_path('js/metropolis.js')) }}"></script>

@@ -76,5 +76,7 @@
     "Eigen aanpassingen gaan verloren!": "Custom changes will be lost!",
     "Ja, reset": "Yes, reset",
     "Effecten gereset naar standaardwaarden!": "Effects reset to defaults!",
-    "Fout bij resetten.": "Error resetting."
+    "Fout bij resetten.": "Error resetting.",
+    "Ongeldig getal": "Invalid number",
+    "Waarde moet tussen -5 en 5 zijn": "Value must be between -5 and 5"
 }

@@ -2,8 +2,6 @@
 
 @section('content')
 
-@include('partials.totalen')
-
 <div class="manager-pagina">
 
     <div class="manager-pagina-header">

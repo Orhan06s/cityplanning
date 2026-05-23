@@ -433,25 +433,56 @@ if (zoektermInput) {
         var key      = fnName + '|' + category;
         var raw      = input.value;
 
-        // toon "saving" status onmiddellijk
-        setInputStatus(input, 'saving');
-
-        // clamp tussen -5 en 5
-        if (raw === '' || raw === '-') return;
-        var points = parseInt(raw, 10);
-        if (isNaN(points)) {
-            setInputStatus(input, 'error');
+        // negeer halverwege typen (leeg of alleen min-teken)
+        if (raw === '' || raw === '-') {
+            clearInputError(input);
             return;
         }
-        if (points < -5) points = -5;
-        if (points > 5)  points = 5;
-        if (String(points) !== raw && raw !== '-') input.value = points;
 
-        // debounce: wacht 400ms na laatste keystroke voor server save
+        var points = parseInt(raw, 10);
+
+        if (isNaN(points)) {
+            showInputError(input, i18n.invalidNumber || 'Ongeldig getal');
+            clearTimeout(saveTimers[key]);
+            return;
+        }
+
+        if (points < -5 || points > 5) {
+            showInputError(input, (i18n.rangeError || 'Waarde moet tussen -5 en 5 zijn'));
+            clearTimeout(saveTimers[key]);
+            return;
+        }
+
+        clearInputError(input);
+        setInputStatus(input, 'saving');
+
         clearTimeout(saveTimers[key]);
         saveTimers[key] = setTimeout(function() {
             saveEffect(input, fnName, category, points);
         }, 400);
+    }
+
+    function showInputError(input, message) {
+        setInputStatus(input, 'error');
+        var wrap = input.closest('.effect-input-wrap');
+        if (!wrap) return;
+        var msg = wrap.querySelector('.effect-input-fout');
+        if (!msg) {
+            msg = document.createElement('span');
+            msg.className = 'effect-input-fout';
+            msg.setAttribute('role', 'alert');
+            wrap.appendChild(msg);
+        }
+        msg.textContent = message;
+        input.setAttribute('aria-invalid', 'true');
+    }
+
+    function clearInputError(input) {
+        var wrap = input.closest('.effect-input-wrap');
+        if (!wrap) return;
+        var msg = wrap.querySelector('.effect-input-fout');
+        if (msg) msg.remove();
+        input.removeAttribute('aria-invalid');
     }
 
     function saveEffect(input, fnName, category, points) {

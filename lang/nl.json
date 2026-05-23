@@ -78,5 +78,7 @@
     "Eigen aanpassingen gaan verloren!": "Eigen aanpassingen gaan verloren!",
     "Ja, reset": "Ja, reset",
     "Effecten gereset naar standaardwaarden!": "Effecten gereset naar standaardwaarden!",
-    "Fout bij resetten.": "Fout bij resetten."
+    "Fout bij resetten.": "Fout bij resetten.",
+    "Ongeldig getal": "Ongeldig getal",
+    "Waarde moet tussen -5 en 5 zijn": "Waarde moet tussen -5 en 5 zijn"
 }

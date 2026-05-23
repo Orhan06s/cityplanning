@@ -1082,11 +1082,6 @@ footer {
 .effects-manager-btn:hover,
 .effects-manager-btn:focus-visible {
     background: #5a3a8a;
-    box-shadow: 0 4px 14px rgba(107, 76, 154, 0.3);
-}
-
-.effects-manager-btn:active {
-    transform: scale(0.98);
 }
 
 .effects-manager-btn:focus-visible {
@@ -1100,11 +1095,6 @@ footer {
 
 .effects-manager-btn .trigger-arrow {
     font-size: 1rem;
-    transition: transform 0.15s ease;
-}
-
-.effects-manager-btn:hover .trigger-arrow {
-    transform: translateX(3px);
 }
 
 /* === Manager pagina layout === */
@@ -1225,13 +1215,9 @@ footer {
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+    transition: background 0.12s ease;
     outline: none;
     line-height: 1.2;
-}
-
-.btn:active:not(:disabled) {
-    transform: scale(0.97);
 }
 
 .btn:disabled {
@@ -1247,7 +1233,6 @@ footer {
 .btn-add:hover:not(:disabled),
 .btn-add:focus-visible {
     background: #1e3a1a;
-    box-shadow: 0 3px 10px rgba(45, 74, 34, 0.25);
 }
 
 .btn-cancel {
@@ -1266,7 +1251,6 @@ footer {
 
 .btn-danger:hover:not(:disabled) {
     background: #a02315;
-    box-shadow: 0 3px 10px rgba(192, 57, 43, 0.3);
 }
 
 .btn-reset {
@@ -1277,7 +1261,6 @@ footer {
 .btn-reset:hover:not(:disabled),
 .btn-reset:focus-visible {
     background: #b88a20;
-    box-shadow: 0 3px 10px rgba(217, 166, 53, 0.3);
 }
 
 .btn:focus-visible {
@@ -1345,10 +1328,6 @@ footer {
     width: 56px;
 }
 
-.effects-row {
-    transition: background 0.15s ease, opacity 0.2s ease, transform 0.2s ease;
-}
-
 .effects-row:nth-child(even) {
     background: #fafbf9;
 }
@@ -1361,19 +1340,12 @@ footer {
     background: inherit;
 }
 
-@keyframes row-fade-in {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
 .effects-row-nieuw {
-    animation: row-fade-in 0.35s ease both;
     background: #e8f3e3 !important;
 }
 
 .effects-row-verwijderd {
     opacity: 0;
-    transform: translateX(15px);
     pointer-events: none;
 }
 
@@ -1469,12 +1441,6 @@ footer {
 .effect-input-wrap[data-status="saving"] .effect-status {
     opacity: 1;
     background: #d9a635;
-    animation: pulse-saving 0.9s ease infinite;
-}
-
-@keyframes pulse-saving {
-    0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.55; }
-    50%      { transform: translateY(-50%) scale(1.35); opacity: 1; }
 }
 
 .effect-input-wrap[data-status="saved"] .effect-input {
@@ -1533,18 +1499,36 @@ footer {
     cursor: pointer;
     padding: 0.35rem 0.45rem;
     border-radius: 6px;
-    transition: background 0.15s ease, transform 0.15s ease;
+    transition: background 0.12s ease;
     line-height: 1;
 }
 
 .btn-delete-function:hover {
     background: #fde8e6;
-    transform: scale(1.18);
 }
 
 .btn-delete-function:focus-visible {
     outline: 2px solid #c0392b;
     outline-offset: 2px;
+}
+
+/* Inline error onder een input — past bij submodal-fout stijl */
+.effect-input-fout {
+    display: block;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fdf0ee;
+    color: #c0392b;
+    border: 1px solid #f0bcb5;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 5;
+    pointer-events: none;
 }
 
 .effects-empty {
@@ -1560,14 +1544,14 @@ footer {
     position: fixed;
     inset: 0;
     z-index: 400;
-    background: rgba(20, 20, 30, 0.5);
+    background: rgba(20, 20, 30, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1rem;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.15s ease;
 }
 
 .submodal[aria-hidden="false"] {
@@ -1577,16 +1561,10 @@ footer {
 
 .submodal-inner {
     background: #fff;
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 1.35rem 1.5rem 1.4rem;
     width: min(420px, 100%);
-    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
-    transform: scale(0.96);
-    transition: transform 0.2s ease;
-}
-
-.submodal[aria-hidden="false"] .submodal-inner {
-    transform: scale(1);
+    border: 1px solid #d0d8cc;
 }
 
 .submodal-titel {
@@ -1668,14 +1646,13 @@ footer {
 .toast {
     background: #333;
     color: #fff;
-    padding: 0.7rem 1rem;
-    border-radius: 8px;
+    padding: 0.65rem 0.95rem;
+    border-radius: 6px;
     font-size: 0.85rem;
     font-weight: 500;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     opacity: 0;
-    transform: translateX(20px);
-    transition: opacity 0.25s ease, transform 0.25s ease;
+    transition: opacity 0.15s ease;
     pointer-events: auto;
     max-width: 320px;
     word-wrap: break-word;
@@ -1683,7 +1660,6 @@ footer {
 
 .toast.toast-zichtbaar {
     opacity: 1;
-    transform: translateX(0);
 }
 
 .toast-success {
@@ -1698,16 +1674,6 @@ footer {
     background: #34495e;
 }
 
-/* ====== Totalen pulse-animatie bij update ====== */
-@keyframes totaal-pulse {
-    0%   { transform: scale(1); }
-    50%  { transform: scale(1.08); box-shadow: 0 4px 16px rgba(45, 74, 34, 0.18); }
-    100% { transform: scale(1); }
-}
-
-.totaal-pulse {
-    animation: totaal-pulse 0.5s ease;
-}
 
 /* ====== Responsive ====== */
 @media (max-width: 768px) {
