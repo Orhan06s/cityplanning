@@ -150,13 +150,13 @@ header h1 {
 }
 
 .taal-btn:hover {
-    background-color: #ff00e1;
+    background-color: #6cff9a;
     color: white;
 }
 
 .melding {
     background-color: #d4edda;
-    color: #155724;
+    color: #0011ff;
     padding: 10px 20px;
     border-left: 4px solid #28a745;
 }
