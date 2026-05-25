@@ -78,5 +78,14 @@
     "Effecten gereset naar standaardwaarden!": "Effects reset to defaults!",
     "Fout bij resetten.": "Error resetting.",
     "Ongeldig getal": "Invalid number",
-    "Waarde moet tussen -5 en 5 zijn": "Value must be between -5 and 5"
+    "Waarde moet tussen -5 en 5 zijn": "Value must be between -5 and 5",
+    "Sluiten": "Close",
+    "Optioneel": "Optional",
+    "Categorie": "Category",
+    "Beschrijving": "Description",
+    "Icoon": "Icon",
+    "Voorbeeld": "Preview",
+    "Kies een icoon": "Choose an icon",
+    "Of upload je eigen icoon (PNG, JPG, SVG — max 2MB)": "Or upload your own icon (PNG, JPG, SVG — max 2MB)",
+    "Effect-punten per categorie": "Effect points per category"
 }

@@ -212,22 +212,8 @@ if (tbody) {
             });
     });
 
-    // Functie toevoegen
-    var addBtn = document.getElementById('add-function-btn');
-    if (addBtn) {
-        addBtn.addEventListener('click', function() {
-            var naam = prompt('Voer functienaam in:');
-            if (!naam) return;
-            naam = naam.trim();
-            if (!naam) return;
-
-            postJson('/api/effects/add-function', { function_name: naam })
-                .then(function(data) {
-                    if (data.success) location.reload();
-                    else alert('Fout bij toevoegen. Bestaat deze functie al?');
-                });
-        });
-    }
+    // Functie toevoegen via modal (BES.2)
+    setupAddFunctionModal();
 
     // Reset naar standaardwaarden
     var resetBtn = document.getElementById('reset-defaults-btn');
@@ -254,4 +240,140 @@ if (tbody) {
             });
         });
     }
+}
+
+
+// Modal voor functie toevoegen
+function setupAddFunctionModal() {
+    var openBtn   = document.getElementById('add-function-btn');
+    var modal     = document.getElementById('add-function-modal');
+    var sluitBtn  = document.getElementById('add-function-modal-sluit');
+    var cancelBtn = document.getElementById('add-function-annuleer');
+    var form      = document.getElementById('add-function-form');
+    var foutBox   = document.getElementById('add-function-fout');
+    var preview   = document.getElementById('af-icon-preview');
+    var iconInput = document.getElementById('af-icon');
+    var fileInput = document.getElementById('af-icon-file');
+    var catSelect = document.getElementById('af-category');
+    var submitBtn = document.getElementById('add-function-submit');
+
+    if (!openBtn || !modal || !form) return;
+
+    var categoryIcons = window.metroCategoryIcons || {};
+
+    function openModal() {
+        form.reset();
+        iconInput.value = '';
+        foutBox.hidden = true;
+        document.querySelectorAll('.icon-keuze-btn.is-actief').forEach(function(b) {
+            b.classList.remove('is-actief');
+            b.setAttribute('aria-checked', 'false');
+        });
+        updatePreviewFromCategory();
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        document.getElementById('af-function-name').focus();
+    }
+
+    function closeModal() {
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    function updatePreviewFromCategory() {
+        if (iconInput.value || (fileInput && fileInput.files.length)) return;
+        preview.textContent = categoryIcons[catSelect.value] || '📍';
+    }
+
+    openBtn.addEventListener('click', openModal);
+    sluitBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.hidden) closeModal();
+    });
+
+    catSelect.addEventListener('change', updatePreviewFromCategory);
+
+    document.querySelectorAll('.icon-keuze-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.icon-keuze-btn.is-actief').forEach(function(b) {
+                b.classList.remove('is-actief');
+                b.setAttribute('aria-checked', 'false');
+            });
+            btn.classList.add('is-actief');
+            btn.setAttribute('aria-checked', 'true');
+            iconInput.value = btn.dataset.icon;
+            if (fileInput) fileInput.value = '';
+            preview.textContent = btn.dataset.icon;
+        });
+    });
+
+    fileInput.addEventListener('change', function() {
+        if (!fileInput.files.length) {
+            updatePreviewFromCategory();
+            return;
+        }
+        var file = fileInput.files[0];
+        if (file.type.indexOf('image/') === 0) {
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+                preview.innerHTML = '<img src="' + ev.target.result + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">';
+            };
+            reader.readAsDataURL(file);
+        }
+        iconInput.value = '';
+        document.querySelectorAll('.icon-keuze-btn.is-actief').forEach(function(b) {
+            b.classList.remove('is-actief');
+            b.setAttribute('aria-checked', 'false');
+        });
+    });
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        foutBox.hidden = true;
+
+        var naamInput = document.getElementById('af-function-name');
+        if (!naamInput.value.trim()) {
+            foutBox.textContent = 'Voer een naam in.';
+            foutBox.hidden = false;
+            naamInput.focus();
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Opslaan...';
+
+        fetch('/api/effects/add-function', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrf(), 'Accept': 'application/json' },
+            body: new FormData(form)
+        })
+        .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
+        .then(function(result) {
+            if (result.ok && result.data.success) {
+                location.reload();
+                return;
+            }
+            var msg = 'Fout bij toevoegen!';
+            if (result.data.errors) {
+                var first = Object.values(result.data.errors)[0];
+                if (Array.isArray(first) && first.length) msg = first[0];
+            }
+            foutBox.textContent = msg;
+            foutBox.hidden = false;
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Toevoegen';
+        })
+        .catch(function() {
+            foutBox.textContent = 'Netwerkfout. Probeer opnieuw.';
+            foutBox.hidden = false;
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Toevoegen';
+        });
+    });
 }
