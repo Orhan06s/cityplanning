@@ -7,6 +7,8 @@
     window.metroGridCols = 4;
 </script>
 
+@include('partials.effects-menu')
+
 @include('partials.totalen')
 
 <div class="container">
@@ -14,7 +16,6 @@
     <div class="library">
         <h2>{{ __('Functiebibliotheek') }}</h2>
         @include('partials.library')
-        @include('partials.effects')
     </div>
 
     <div class="grid-wrapper">

@@ -355,6 +355,115 @@ footer {
     color: #3f4d3c;
 }
 
+/* Effectenmatrix als horizontaal dropdown-menu bovenaan */
+.effecten-menu {
+    background: #2d4a22;
+    padding: 0.5rem 1rem;
+    border-bottom: 2px solid #1e3a1a;
+}
+
+.effecten-menu-lijst {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    max-width: 1200px;
+}
+
+.effecten-menu-item {
+    position: relative;
+}
+
+.effecten-details {
+    position: relative;
+}
+
+.effecten-summary {
+    list-style: none;
+    cursor: pointer;
+    color: #fff;
+    padding: 0.45rem 0.75rem;
+    border-radius: 4px;
+    user-select: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: background 0.12s ease;
+}
+
+.effecten-summary::-webkit-details-marker { display: none; }
+.effecten-summary::marker { display: none; content: ''; }
+
+.effecten-summary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.effecten-details[open] > .effecten-summary {
+    background: #fff;
+    color: #2d4a22;
+}
+
+.effecten-chevron {
+    font-size: 0.7rem;
+    transition: transform 0.15s ease;
+}
+
+.effecten-details[open] .effecten-chevron {
+    transform: rotate(180deg);
+}
+
+.effecten-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    background: #fff;
+    border: 1px solid #d0d8cc;
+    border-radius: 6px;
+    padding: 0.5rem 0.7rem;
+    min-width: 170px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.effecten-rij {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 3px 0;
+    font-size: 0.82rem;
+}
+
+.effecten-cat {
+    text-transform: capitalize;
+    color: #444;
+}
+
+.effecten-waarde {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    min-width: 1.8em;
+    text-align: right;
+}
+
+.effecten-waarde.is-positief { color: #155215; }
+.effecten-waarde.is-negatief { color: #922b21; }
+.effecten-waarde.is-neutraal { color: #888; }
+
+@media (max-width: 768px) {
+    .effecten-summary {
+        font-size: 0.78rem;
+        padding: 0.35rem 0.55rem;
+    }
+    .effecten-dropdown {
+        min-width: 150px;
+        font-size: 0.8rem;
+    }
+}
+
 /* SIM.10 — tooltip met effect-waarden bij hover op geplaatste cel */
 .cel-tooltip {
     position: absolute;

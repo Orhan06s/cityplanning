@@ -401,6 +401,28 @@ if (clearGridBtn) {
 
 
 // ============================================
+// EFFECTEN-MENU bovenaan: sluit andere dropdowns als er één open gaat
+// ============================================
+
+document.querySelectorAll('.effecten-details').forEach(function(d) {
+    d.addEventListener('toggle', function() {
+        if (!d.open) return;
+        document.querySelectorAll('.effecten-details[open]').forEach(function(ander) {
+            if (ander !== d) ander.open = false;
+        });
+    });
+});
+
+// Klik buiten het menu → alle dropdowns sluiten
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.effecten-details')) return;
+    document.querySelectorAll('.effecten-details[open]').forEach(function(d) {
+        d.open = false;
+    });
+});
+
+
+// ============================================
 // HOVER TOOLTIP op bezette grid-cellen (SIM.10)
 // ============================================
 
