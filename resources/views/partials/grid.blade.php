@@ -12,7 +12,11 @@
              aria-label="Cel {{ $cell->position + 1 }}: {{ $cell->destination ? $cell->destination->getNaam() : __('leeg') }}">
 
             @if($cell->destination)
-                <span class="cel-icon" aria-hidden="true">{{ $cell->destination->icon }}</span>
+                @if(str_starts_with($cell->destination->icon, '/'))
+                    <img src="{{ $cell->destination->icon }}" alt="" class="cel-icon functie-icon-img" aria-hidden="true">
+                @else
+                    <span class="cel-icon" aria-hidden="true">{{ $cell->destination->icon }}</span>
+                @endif
                 <span class="cel-naam">{{ $cell->destination->getNaam() }}</span>
 
                 <form action="{{ route('remove') }}" method="POST">

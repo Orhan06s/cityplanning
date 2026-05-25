@@ -11,8 +11,14 @@
                  data-id="{{ $item->id }}"
                  data-name="{{ $item->getNaam() }}"
                  data-icon="{{ $item->icon }}"
+                 @if($item->description) title="{{ $item->description }}" @endif
                  aria-label="{{ $item->getNaam() }} - {{ __('sleep naar een cel om te plaatsen') }}">
-                <span aria-hidden="true">{{ $item->icon }}</span> {{ $item->getNaam() }}
+                @if(str_starts_with($item->icon, '/'))
+                    <img src="{{ $item->icon }}" alt="" class="functie-icon-img" aria-hidden="true">
+                @else
+                    <span aria-hidden="true">{{ $item->icon }}</span>
+                @endif
+                {{ $item->getNaam() }}
             </div>
         @endforeach
     @endforeach

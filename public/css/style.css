@@ -1488,6 +1488,21 @@ footer {
 }
 
 
+/* Geuploade icoon-afbeeldingen in library en grid */
+.functie-icon-img {
+    width: 1.4em;
+    height: 1.4em;
+    object-fit: cover;
+    border-radius: 4px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.cel-icon.functie-icon-img {
+    width: 2.2em;
+    height: 2.2em;
+}
+
 /* Modal "Functie toevoegen" */
 
 .modal-overlay {
