@@ -316,67 +316,60 @@ if (zoektermInput) {
     });
 })();
 
-// SIM.10 — Hover info: laat zien wat een functie scoort op de categorie
-// van een aanliggende bezette cel. Groen = positief, rood = negatief.
+// SIM.10 — Hover over een geplaatste cel toont een tooltip met de
+// effect-waarden van die functie. Groen = positief, rood = negatief.
 (function() {
     'use strict';
 
     var matrix = window.metroEffectsMatrix;
-    var cols   = window.metroGridCols || 4;
     if (!matrix) return;
 
     var cellen = document.querySelectorAll('.cel.bezet');
     if (!cellen.length) return;
 
-    function buren(pos) {
-        var row = Math.floor(pos / cols);
-        var col = pos % cols;
-        var result = [];
-        for (var dr = -1; dr <= 1; dr++) {
-            for (var dc = -1; dc <= 1; dc++) {
-                if (dr === 0 && dc === 0) continue;
-                result.push({ row: row + dr, col: col + dc });
-            }
-        }
-        return result;
-    }
+    function toonTooltip(cel) {
+        var fn = cel.getAttribute('data-function-name');
+        if (!fn || !matrix[fn]) return;
 
-    function toonBadges(bron) {
-        var bronPos = parseInt(bron.getAttribute('data-position'), 10);
-        var bronFn  = bron.getAttribute('data-function-name');
-        if (isNaN(bronPos) || !bronFn || !matrix[bronFn]) return;
+        wisTooltips();
 
-        var nabuurPosities = buren(bronPos).map(function(p) {
-            return p.row * cols + p.col;
+        var tt = document.createElement('div');
+        tt.className = 'cel-tooltip';
+
+        var effecten = matrix[fn];
+        Object.keys(effecten).forEach(function(cat) {
+            var v = effecten[cat];
+            var teken  = v > 0 ? '+' + v : String(v);
+            var kleur  = v > 0 ? 'positief' : (v < 0 ? 'negatief' : 'neutraal');
+
+            var rij = document.createElement('div');
+            rij.className = 'tooltip-rij';
+
+            var catEl = document.createElement('span');
+            catEl.className = 'tooltip-cat';
+            catEl.textContent = cat;
+
+            var waardeEl = document.createElement('span');
+            waardeEl.className = 'tooltip-waarde is-' + kleur;
+            waardeEl.textContent = teken;
+
+            rij.appendChild(catEl);
+            rij.appendChild(waardeEl);
+            tt.appendChild(rij);
         });
 
-        cellen.forEach(function(cel) {
-            if (cel === bron) return;
-            var pos = parseInt(cel.getAttribute('data-position'), 10);
-            if (nabuurPosities.indexOf(pos) === -1) return;
-
-            var cat = cel.getAttribute('data-category');
-            if (!cat) return;
-            var waarde = matrix[bronFn][cat];
-            if (typeof waarde !== 'number' || waarde === 0) return;
-
-            var badge = document.createElement('span');
-            badge.className = 'cel-hover-badge ' + (waarde > 0 ? 'is-positief' : 'is-negatief');
-            badge.setAttribute('aria-hidden', 'true');
-            badge.textContent = waarde > 0 ? '+' + waarde : String(waarde);
-            cel.appendChild(badge);
-        });
+        cel.appendChild(tt);
     }
 
-    function wisBadges() {
-        document.querySelectorAll('.cel-hover-badge').forEach(function(b) { b.remove(); });
+    function wisTooltips() {
+        document.querySelectorAll('.cel-tooltip').forEach(function(t) { t.remove(); });
     }
 
     cellen.forEach(function(cel) {
-        cel.addEventListener('mouseenter', function() { toonBadges(cel); });
-        cel.addEventListener('mouseleave', wisBadges);
-        cel.addEventListener('focus',      function() { toonBadges(cel); });
-        cel.addEventListener('blur',       wisBadges);
+        cel.addEventListener('mouseenter', function() { toonTooltip(cel); });
+        cel.addEventListener('mouseleave', wisTooltips);
+        cel.addEventListener('focus',      function() { toonTooltip(cel); });
+        cel.addEventListener('blur',       wisTooltips);
     });
 })();
 

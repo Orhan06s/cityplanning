@@ -284,33 +284,46 @@ footer {
     background-color: #e8f5e9;
 }
 
-/* SIM.10 — hover info badge op aanliggende bezette cellen */
-.cel-hover-badge {
+/* SIM.10 — tooltip met effect-waarden bij hover op geplaatste cel */
+.cel-tooltip {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    padding: 2px 7px;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-    font-weight: 700;
-    line-height: 1.2;
-    border: 1px solid;
+    top: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border: 1px solid #d0d8cc;
+    border-radius: 6px;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.78rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    z-index: 10;
+    min-width: 150px;
     pointer-events: none;
-    z-index: 4;
+    text-align: left;
 }
 
-.cel-hover-badge.is-positief {
-    background: #d4edda;
-    color: #155215;
-    border-color: #2d8a3a;
+.tooltip-rij {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 2px 0;
 }
 
-.cel-hover-badge.is-negatief {
-    background: #fde8e6;
-    color: #922b21;
-    border-color: #c0392b;
+.tooltip-cat {
+    text-transform: capitalize;
+    color: #444;
 }
+
+.tooltip-waarde {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    min-width: 1.8em;
+    text-align: right;
+}
+
+.tooltip-waarde.is-positief { color: #155215; }
+.tooltip-waarde.is-negatief { color: #922b21; }
+.tooltip-waarde.is-neutraal { color: #888; }
 
 .cel:hover {
     border-color: #2d4a22;
