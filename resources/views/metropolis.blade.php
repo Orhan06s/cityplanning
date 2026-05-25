@@ -18,7 +18,10 @@
     </div>
 
     <div class="grid-wrapper">
-        <h2>{{ __('Stadsgebied') }}</h2>
+        <h2>{{ __('Stadsgebied') }}
+            <button id="clear-grid-btn" class="btn btn-small" style="margin-left:12px">{{ __('Leeg grid') }}</button>
+        </h2>
+        <p class="grid-help">Klik op een geplaatste cel om deze te selecteren. Klik een lege cel om de geselecteerde groep te verplaatsen. Klik met de rechtermuisknop een andere bezette cel om de geselecteerde cel ermee te koppelen.</p>
         @include('partials.grid')
     </div>
 

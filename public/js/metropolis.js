@@ -49,6 +49,76 @@ function submitForm(action, velden) {
 // Welk library-item is geselecteerd (voor klik-om-te-plaatsen)
 var geselecteerdId = null;
 
+// Selectie-state voor groepen (koppelen / verplaatsen)
+var selectedGroupCellId = null;
+var selectedGroupId = null;
+
+// Drag-state voor het verslepen van gekoppelde groepen
+var isGroupDragging = false;
+var dragStartX = 0;
+var dragStartY = 0;
+var dragAnchorCellId = null;
+var dragAnchorPosition = null;
+var dragAnchorRect = null;
+var dragSnapTargetEl = null;
+var dragGhostElements = [];
+var cellWidth = 0;
+var cellHeight = 0;
+var dragMoved = false;
+var dragGroupElements = [];
+
+function saveSelectionState() {
+    if (selectedGroupId) {
+        sessionStorage.setItem('metropolisSelectedGroupId', selectedGroupId);
+        sessionStorage.removeItem('metropolisSelectedCellId');
+    } else if (selectedGroupCellId) {
+        sessionStorage.setItem('metropolisSelectedCellId', selectedGroupCellId);
+        sessionStorage.removeItem('metropolisSelectedGroupId');
+    } else {
+        sessionStorage.removeItem('metropolisSelectedGroupId');
+        sessionStorage.removeItem('metropolisSelectedCellId');
+    }
+}
+
+function restoreSelectionState() {
+    var groupId = sessionStorage.getItem('metropolisSelectedGroupId');
+    if (groupId) {
+        var cel = document.querySelector('.cel[data-linked-group="' + groupId + '"]');
+        if (cel) selectGroupCell(cel);
+        sessionStorage.removeItem('metropolisSelectedGroupId');
+        return;
+    }
+
+    var cellId = sessionStorage.getItem('metropolisSelectedCellId');
+    if (cellId) {
+        var cel = document.querySelector('.cel[data-cell-id="' + cellId + '"]');
+        if (cel && cel.classList.contains('bezet')) selectGroupCell(cel);
+        sessionStorage.removeItem('metropolisSelectedCellId');
+    }
+}
+
+function resetGroupSelection() {
+    selectedGroupCellId = null;
+    selectedGroupId = null;
+    document.querySelectorAll('.cel.group-selected').forEach(function(cel) {
+        cel.classList.remove('group-selected');
+    });
+}
+
+function selectGroupCell(cel) {
+    resetGroupSelection();
+    selectedGroupCellId = cel.dataset.cellId;
+    selectedGroupId = cel.dataset.linkedGroup || null;
+
+    if (selectedGroupId) {
+        document.querySelectorAll('.cel[data-linked-group="' + selectedGroupId + '"]').forEach(function(other) {
+            other.classList.add('group-selected');
+        });
+    } else {
+        cel.classList.add('group-selected');
+    }
+}
+
 // Library items: kunnen gesleept worden EN aangeklikt voor selectie
 document.querySelectorAll('.library-item').forEach(function(item) {
     item.addEventListener('dragstart', function(e) {
@@ -56,6 +126,7 @@ document.querySelectorAll('.library-item').forEach(function(item) {
     });
 
     item.addEventListener('click', function() {
+        resetGroupSelection();
         var wasSelected = item.classList.contains('geselecteerd');
         document.querySelectorAll('.library-item.geselecteerd').forEach(function(i) {
             i.classList.remove('geselecteerd');
@@ -69,7 +140,7 @@ document.querySelectorAll('.library-item').forEach(function(item) {
     });
 });
 
-// Grid cellen: kunnen drop ontvangen of geklikt worden (als er iets geselecteerd is)
+// Grid cellen: kunnen drop ontvangen, geklikt worden, of een groep verslepen
 document.querySelectorAll('.cel').forEach(function(cel) {
     cel.addEventListener('dragover', function(e) { e.preventDefault(); });
 
@@ -77,16 +148,232 @@ document.querySelectorAll('.cel').forEach(function(cel) {
         e.preventDefault();
         var id = e.dataTransfer.getData('text/plain');
         if (id) {
+            resetGroupSelection();
             submitForm('/place', { cell_id: cel.dataset.cellId, destination_id: id });
         }
     });
 
     cel.addEventListener('click', function() {
+        // Net een drag gehad → click niet behandelen
+        if (dragMoved) { dragMoved = false; return; }
+
+        // Library-item geselecteerd + lege cel → plaatsen
         if (geselecteerdId && cel.classList.contains('leeg')) {
+            resetGroupSelection();
             submitForm('/place', { cell_id: cel.dataset.cellId, destination_id: geselecteerdId });
+            return;
+        }
+
+        // Klik op een bezette cel → selecteren of koppelen
+        if (cel.classList.contains('bezet')) {
+            if (!selectedGroupCellId) {
+                selectGroupCell(cel);
+                return;
+            }
+            if (selectedGroupCellId === cel.dataset.cellId) {
+                resetGroupSelection();
+                return;
+            }
+            postJson('/group/link', {
+                source_cell_id: selectedGroupCellId,
+                target_cell_id: cel.dataset.cellId
+            }).then(function(data) {
+                if (data.success) {
+                    saveSelectionState();
+                    location.reload();
+                } else {
+                    alert(data.message || 'Fout bij koppelen.');
+                }
+            });
+            return;
+        }
+
+        // Klik op lege cel terwijl een groep geselecteerd is → verplaatsen
+        if (cel.classList.contains('leeg') && selectedGroupCellId) {
+            postJson('/group/move', {
+                source_cell_id: selectedGroupCellId,
+                target_cell_id: cel.dataset.cellId
+            }).then(function(data) {
+                if (data.success) {
+                    saveSelectionState();
+                    location.reload();
+                } else {
+                    alert(data.message || 'Fout bij verplaatsen.');
+                }
+            });
         }
     });
+
+    // Rechtermuisklik op andere bezette cel → koppel met geselecteerde
+    cel.addEventListener('contextmenu', function(e) {
+        if (!selectedGroupCellId) return;
+        if (selectedGroupCellId === cel.dataset.cellId) return;
+        if (!cel.classList.contains('bezet')) return;
+
+        e.preventDefault();
+
+        postJson('/group/link', {
+            source_cell_id: selectedGroupCellId,
+            target_cell_id: cel.dataset.cellId
+        }).then(function(data) {
+            if (data.success) {
+                saveSelectionState();
+                location.reload();
+            } else {
+                alert(data.message || 'Fout bij koppelen.');
+            }
+        });
+    });
+
+    // Sleep gekoppelde groep met de muis
+    cel.addEventListener('mousedown', function(e) {
+        if (e.button !== 0) return;                       // alleen linkermuisknop
+        if (e.target.closest('.verwijder-btn')) return;   // niet bij klik op X
+        var linked = cel.dataset.linkedGroup;
+        if (!linked) return;
+
+        dragMoved = false;
+
+        var groupCells = Array.from(document.querySelectorAll('.cel[data-linked-group="' + linked + '"]'));
+        var anchorCell = groupCells.reduce(function(min, el) {
+            return parseInt(el.dataset.position, 10) < parseInt(min.dataset.position, 10) ? el : min;
+        }, groupCells[0]);
+
+        dragAnchorCellId = anchorCell.dataset.cellId;
+        dragAnchorPosition = parseInt(anchorCell.dataset.position, 10);
+        dragAnchorRect = anchorCell.getBoundingClientRect();
+        cellWidth = anchorCell.offsetWidth;
+        cellHeight = anchorCell.offsetHeight;
+
+        // Maak ghost-elementen die de muis volgen
+        dragGhostElements = groupCells.map(function(el) {
+            var rect = el.getBoundingClientRect();
+            var ghost = el.cloneNode(true);
+            ghost.classList.add('drag-ghost');
+            ghost.style.position = 'absolute';
+            ghost.style.left = rect.left + 'px';
+            ghost.style.top = rect.top + 'px';
+            ghost.style.width = rect.width + 'px';
+            ghost.style.height = rect.height + 'px';
+            ghost.style.margin = '0';
+            ghost.style.transform = 'none';
+            ghost.style.transition = 'transform 0s';
+            ghost.style.pointerEvents = 'none';
+            ghost.style.opacity = '0.45';
+            ghost.style.zIndex = '100';
+            document.body.appendChild(ghost);
+            return ghost;
+        });
+
+        dragGroupElements = groupCells;
+        dragGroupElements.forEach(function(el) {
+            el.classList.add('dragging');
+            el.style.zIndex = 60;
+            el.style.pointerEvents = 'none';
+        });
+
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+
+        function resetDragVisuals() {
+            dragGroupElements.forEach(function(el) {
+                el.classList.remove('dragging');
+                el.style.zIndex = '';
+                el.style.pointerEvents = '';
+            });
+            dragGroupElements = [];
+            dragGhostElements.forEach(function(el) { el.remove(); });
+            dragGhostElements = [];
+            if (dragSnapTargetEl) {
+                dragSnapTargetEl.classList.remove('drag-over');
+                dragSnapTargetEl = null;
+            }
+        }
+
+        function onMouseMove(ev) {
+            var dx = ev.clientX - dragStartX;
+            var dy = ev.clientY - dragStartY;
+            if (!isGroupDragging && Math.hypot(dx, dy) > 6) {
+                isGroupDragging = true;
+            }
+
+            if (!isGroupDragging) return;
+
+            dragGhostElements.forEach(function(ghost) {
+                ghost.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+            });
+            dragMoved = true;
+
+            // Bepaal doelcel op basis van anchor-ghost middelpunt
+            var anchorLeft = dragAnchorRect.left + dx;
+            var anchorTop  = dragAnchorRect.top + dy;
+            var centerX = anchorLeft + (cellWidth / 2);
+            var centerY = anchorTop + (cellHeight / 2);
+
+            if (dragSnapTargetEl) {
+                dragSnapTargetEl.classList.remove('drag-over');
+                dragSnapTargetEl = null;
+            }
+
+            var elemAt = document.elementFromPoint(Math.round(centerX), Math.round(centerY));
+            var snapEl = elemAt ? elemAt.closest('.cel') : null;
+            if (snapEl && snapEl.classList.contains('leeg')) {
+                dragSnapTargetEl = snapEl;
+                dragSnapTargetEl.classList.add('drag-over');
+            }
+        }
+
+        function onMouseUp() {
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+
+            if (!isGroupDragging) {
+                resetDragVisuals();
+                return;
+            }
+
+            if (dragSnapTargetEl) {
+                postJson('/group/move', {
+                    source_cell_id: dragAnchorCellId,
+                    target_cell_id: dragSnapTargetEl.dataset.cellId
+                }).then(function(data) {
+                    if (data.success) {
+                        saveSelectionState();
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Fout bij verplaatsen.');
+                        resetDragVisuals();
+                    }
+                }).catch(function() { resetDragVisuals(); });
+            } else {
+                resetDragVisuals();
+            }
+
+            isGroupDragging = false;
+            dragAnchorCellId = null;
+            dragAnchorPosition = null;
+            dragAnchorRect = null;
+            cellWidth = 0;
+            cellHeight = 0;
+        }
+
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    });
 });
+
+// Verwijder-knop niet door laten klikken naar de cel-click
+document.querySelectorAll('.verwijder-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) { e.stopPropagation(); });
+});
+
+restoreSelectionState();
+
+// Context-menu uitzetten op het grid (we gebruiken rechtermuisknop voor koppelen)
+var grid = document.querySelector('.grid');
+if (grid) {
+    grid.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+}
 
 // Zoekveld in functiebibliotheek
 var zoekInput = document.getElementById('zoekterm');
@@ -97,6 +384,18 @@ if (zoekInput) {
             var naam = item.dataset.name.toLowerCase();
             item.style.display = naam.indexOf(term) !== -1 ? '' : 'none';
         });
+    });
+}
+
+// Leeg grid knop (verwijdert alle functies van het grid)
+var clearGridBtn = document.getElementById('clear-grid-btn');
+if (clearGridBtn) {
+    clearGridBtn.addEventListener('click', function() {
+        if (!confirm('Weet je zeker dat je alle functies van het grid wilt verwijderen?')) return;
+        postJson('/grid/clear', null).then(function(data) {
+            if (data.success) location.reload();
+            else alert('Fout bij legen van grid.');
+        }).catch(function() { alert('Fout bij legen van grid.'); });
     });
 }
 

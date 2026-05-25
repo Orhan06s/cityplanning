@@ -1,10 +1,18 @@
 <div class="grid" role="grid" aria-label="{{ __('Stadsgebied grid') }}">
+    @php $COLUMNS = 4; @endphp
     @foreach($gridCells as $cell)
-        <div class="cel {{ $cell->destination ? 'bezet' : 'leeg' }}"
+        @php
+            $row = intdiv($cell->position, $COLUMNS) + 1;
+            $col = ($cell->position % $COLUMNS) + 1;
+        @endphp
+        <div class="cel {{ $cell->destination ? 'bezet' : 'leeg' }} {{ $cell->linked_group_id ? 'linked' : '' }}"
              role="gridcell"
              tabindex="0"
              data-cell-id="{{ $cell->id }}"
              data-position="{{ $cell->position }}"
+             data-row="{{ $row }}"
+             data-col="{{ $col }}"
+             data-linked-group="{{ $cell->linked_group_id ?? '' }}"
              @if($cell->destination)
                  data-function-name="{{ $cell->destination->name }}"
                  data-category="{{ $cell->destination->category }}"
@@ -19,6 +27,10 @@
                 @endif
                 <span class="cel-naam">{{ $cell->destination->getNaam() }}</span>
 
+                @if($cell->linked_group_id)
+                    <span class="cel-link-badge" aria-hidden="true">🔗</span>
+                @endif
+
                 <form action="{{ route('remove') }}" method="POST">
                     @csrf
                     <input type="hidden" name="cell_id" value="{{ $cell->id }}">
@@ -28,6 +40,8 @@
             @else
                 <span class="leeg-tekst" aria-hidden="true">{{ __('Sleep hier') }}</span>
             @endif
+
+            <span class="cel-coords" aria-hidden="true">{{ $col }},{{ $row }}</span>
 
         </div>
     @endforeach

@@ -7,6 +7,9 @@ use App\Http\Controllers\EffectsController;
 Route::get('/', [MetropolisController::class, 'index'])->name('home');
 Route::post('/place', [MetropolisController::class, 'place'])->name('place');
 Route::post('/remove', [MetropolisController::class, 'remove'])->name('remove');
+Route::post('/group/link', [MetropolisController::class, 'linkGroup']);
+Route::post('/group/move', [MetropolisController::class, 'moveGroup']);
+Route::post('/grid/clear', [MetropolisController::class, 'clearGrid'])->name('grid.clear');
 
 // Effects Manager — aparte pagina
 Route::get('/effecten-beheren', [EffectsController::class, 'page'])->name('effects.manager');
