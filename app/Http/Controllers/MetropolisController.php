@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Destination;
 use App\Models\GridCell;
-use App\Models\FunctionEffect;
 use App\Services\EffectsCalculator;
 
 class MetropolisController extends Controller
@@ -17,21 +16,17 @@ class MetropolisController extends Controller
         $gridCells = GridCell::with('destination')->orderBy('position')->get();
 
         // Effecten berekenen via de service.
-        // Output: ['veiligheid' => X, 'recreatie' => Y, ...]  → klaar voor de Effects-view.
-        $calculator = new EffectsCalculator();
-        $effecten   = $calculator->calculate($gridCells);
-        $categories = $calculator->getCategories();
-
-        // Effects manager data
-        $effects = FunctionEffect::orderBy('function_name')->orderBy('category')->get();
-        $groupedByFunction = $effects->groupBy('function_name');
+        $calculator    = new EffectsCalculator();
+        $effecten      = $calculator->calculate($gridCells);
+        $categories    = $calculator->getCategories();
+        $effectsMatrix = $calculator->getMatrix();
 
         return view('metropolis', [
             'destinationsByCategory' => $destinationsByCategory,
             'gridCells'              => $gridCells,
             'effecten'               => $effecten,
             'categories'             => $categories,
-            'groupedByFunction'      => $groupedByFunction,
+            'effectsMatrix'          => $effectsMatrix,
         ]);
     }
 

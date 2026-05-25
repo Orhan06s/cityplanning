@@ -2,6 +2,11 @@
 
 @section('content')
 
+<script>
+    window.metroEffectsMatrix = @json($effectsMatrix);
+    window.metroGridCols = 4;
+</script>
+
 @include('partials.totalen')
 
 <div class="container">

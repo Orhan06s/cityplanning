@@ -4,6 +4,11 @@
              role="gridcell"
              tabindex="0"
              data-cell-id="{{ $cell->id }}"
+             data-position="{{ $cell->position }}"
+             @if($cell->destination)
+                 data-function-name="{{ $cell->destination->name }}"
+                 data-category="{{ $cell->destination->category }}"
+             @endif
              aria-label="Cel {{ $cell->position + 1 }}: {{ $cell->destination ? $cell->destination->getNaam() : __('leeg') }}">
 
             @if($cell->destination)

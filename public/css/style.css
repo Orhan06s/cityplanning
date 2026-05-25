@@ -284,6 +284,34 @@ footer {
     background-color: #e8f5e9;
 }
 
+/* SIM.10 — hover info badge op aanliggende bezette cellen */
+.cel-hover-badge {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.2;
+    border: 1px solid;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.cel-hover-badge.is-positief {
+    background: #d4edda;
+    color: #155215;
+    border-color: #2d8a3a;
+}
+
+.cel-hover-badge.is-negatief {
+    background: #fde8e6;
+    color: #922b21;
+    border-color: #c0392b;
+}
+
 .cel:hover {
     border-color: #2d4a22;
     background-color: #f1f8e9;
