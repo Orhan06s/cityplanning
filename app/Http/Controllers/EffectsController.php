@@ -59,23 +59,17 @@ class EffectsController extends Controller
         $calculator = new EffectsCalculator();
         $categories = $calculator->getCategories();
 
-        $rowEffects = [];
         foreach ($categories as $category) {
-            $effect = FunctionEffect::create([
+            FunctionEffect::create([
                 'function_name' => $name,
                 'category'      => $category,
                 'points'        => 0,
             ]);
-            $rowEffects[$category] = $effect->points;
         }
 
-        return response()->json([
-            'success'       => true,
-            'function_name' => $name,
-            'categories'    => $categories,
-            'effects'       => $rowEffects,
-            'totals'        => $this->recalculateTotals(),
-        ]);
+        session()->flash('success', __('Functie toegevoegd!'));
+
+        return response()->json(['success' => true]);
     }
 
     public function deleteFunction(Request $request)
@@ -86,10 +80,9 @@ class EffectsController extends Controller
 
         FunctionEffect::where('function_name', $validated['function_name'])->delete();
 
-        return response()->json([
-            'success' => true,
-            'totals'  => $this->recalculateTotals(),
-        ]);
+        session()->flash('success', __('Functie verwijderd!'));
+
+        return response()->json(['success' => true]);
     }
 
     /**
@@ -116,10 +109,9 @@ class EffectsController extends Controller
         }
         DB::table('function_effects')->insert($rows);
 
-        return response()->json([
-            'success' => true,
-            'totals'  => $this->recalculateTotals(),
-        ]);
+        session()->flash('success', __('Effecten gereset naar standaardwaarden!'));
+
+        return response()->json(['success' => true]);
     }
 
     private function recalculateTotals()

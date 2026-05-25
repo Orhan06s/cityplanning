@@ -8,11 +8,6 @@
         <h2 class="manager-pagina-titel">{{ __('Effecten beheren') }}</h2>
     </div>
 
-    <p class="manager-pagina-tekst">
-        {{ __('Pas hier de effect-waarden aan voor elke stadsfunctie per categorie.') }}
-        <span class="effects-manager-hint">{{ __('Wijzigingen worden automatisch opgeslagen en zijn meteen actief op de grid.') }}</span>
-    </p>
-
     <div class="effects-manager-toolbar">
         <button
             id="add-function-btn"
@@ -42,8 +37,6 @@
                 autocomplete="off"
             >
         </div>
-
-        <span id="effects-manager-stats" class="effects-manager-stats" aria-live="polite"></span>
     </div>
 
     <div class="effects-manager-tabel-wrapper" tabindex="0">
@@ -84,7 +77,6 @@
                                         data-initial="{{ $points }}"
                                         aria-label="{{ __($functionName) }} - {{ __($category) }}"
                                     />
-                                    <span class="effect-status" aria-hidden="true"></span>
                                 </div>
                             </td>
                         @endforeach
@@ -111,90 +103,4 @@
 
 </div>
 
-{{-- Submodal: nieuwe functie toevoegen --}}
-<div
-    id="add-function-modal"
-    class="submodal"
-    role="dialog"
-    aria-labelledby="add-function-titel"
-    aria-hidden="true"
-    aria-modal="true"
-    hidden
->
-    <div class="submodal-inner">
-        <h3 id="add-function-titel" class="submodal-titel">{{ __('Nieuwe functie toevoegen') }}</h3>
-        <p class="submodal-tekst">{{ __('Voer de naam van de nieuwe stadsfunctie in. Alle effect-waarden beginnen op 0.') }}</p>
-
-        <form id="add-function-form" novalidate>
-            <label for="add-function-input" class="submodal-label">{{ __('Functienaam') }}</label>
-            <input
-                type="text"
-                id="add-function-input"
-                class="submodal-input"
-                maxlength="50"
-                required
-                autocomplete="off"
-                aria-describedby="add-function-fout"
-            />
-            <p id="add-function-fout" class="submodal-fout" role="alert" hidden></p>
-
-            <div class="submodal-knoppen">
-                <button type="button" class="btn btn-cancel" data-close-submodal>{{ __('Annuleer') }}</button>
-                <button type="submit" class="btn btn-add">{{ __('Toevoegen') }}</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-{{-- Submodal: reset naar defaults bevestiging --}}
-<div
-    id="reset-defaults-modal"
-    class="submodal"
-    role="alertdialog"
-    aria-labelledby="reset-defaults-titel"
-    aria-hidden="true"
-    aria-modal="true"
-    hidden
->
-    <div class="submodal-inner">
-        <h3 id="reset-defaults-titel" class="submodal-titel">{{ __('Reset naar standaardwaarden?') }}</h3>
-        <p class="submodal-tekst">
-            {{ __('Dit verwijdert alle huidige effect-waarden en herstelt ze naar de defaults.') }}
-            <br><br>
-            <strong>{{ __('Eigen aanpassingen gaan verloren!') }}</strong>
-        </p>
-
-        <div class="submodal-knoppen">
-            <button type="button" class="btn btn-cancel" data-close-submodal>{{ __('Annuleer') }}</button>
-            <button type="button" id="reset-defaults-bevestig" class="btn btn-danger">{{ __('Ja, reset') }}</button>
-        </div>
-    </div>
-</div>
-
-{{-- Submodal: verwijder bevestiging --}}
-<div
-    id="delete-function-modal"
-    class="submodal"
-    role="alertdialog"
-    aria-labelledby="delete-function-titel"
-    aria-hidden="true"
-    aria-modal="true"
-    hidden
->
-    <div class="submodal-inner">
-        <h3 id="delete-function-titel" class="submodal-titel">{{ __('Functie verwijderen?') }}</h3>
-        <p class="submodal-tekst">
-            {{ __('Weet je zeker dat je deze functie wilt verwijderen?') }}
-            <strong id="delete-function-naam"></strong>
-        </p>
-
-        <div class="submodal-knoppen">
-            <button type="button" class="btn btn-cancel" data-close-submodal>{{ __('Annuleer') }}</button>
-            <button type="button" id="delete-function-bevestig" class="btn btn-danger">{{ __('Verwijder') }}</button>
-        </div>
-    </div>
-</div>
-
-{{-- Toast container --}}
-<div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
 @endsection
