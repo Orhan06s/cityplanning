@@ -5,10 +5,7 @@
 <div class="manager-pagina">
 
     <div class="manager-pagina-header">
-        <h2 class="manager-pagina-titel">
-            <span aria-hidden="true">⚙️</span>
-            {{ __('Effecten beheren') }}
-        </h2>
+        <h2 class="manager-pagina-titel">{{ __('Effecten beheren') }}</h2>
     </div>
 
     <p class="manager-pagina-tekst">
@@ -98,7 +95,7 @@
                                 aria-label="{{ __('Verwijder') }} {{ __($functionName) }}"
                                 type="button"
                                 title="{{ __('Verwijder') }} {{ __($functionName) }}"
-                            >🗑️</button>
+                            >{{ __('Verwijder') }}</button>
                         </td>
                     </tr>
                 @empty

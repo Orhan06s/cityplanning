@@ -19,12 +19,10 @@
             <nav class="header-nav" aria-label="{{ __('Hoofdnavigatie') }}">
                 <a href="{{ route('home') }}"
                    class="nav-link {{ request()->routeIs('home') ? 'is-actief' : '' }}">
-                    <span aria-hidden="true">🏙️</span>
                     {{ __('Stadsgebied') }}
                 </a>
                 <a href="{{ route('effects.manager') }}"
                    class="nav-link {{ request()->routeIs('effects.manager') ? 'is-actief' : '' }}">
-                    <span aria-hidden="true">⚙️</span>
                     {{ __('Effecten beheren') }}
                 </a>
             </nav>

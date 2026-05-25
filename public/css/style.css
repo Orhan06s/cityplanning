@@ -1325,7 +1325,7 @@ footer {
 }
 
 .effects-manager-tabel .th-actions {
-    width: 56px;
+    width: 90px;
 }
 
 .effects-row:nth-child(even) {
@@ -1494,13 +1494,16 @@ footer {
 
 .btn-delete-function {
     background: none;
-    border: none;
-    font-size: 1.05rem;
+    color: #c0392b;
+    border: 1px solid #f0bcb5;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
     cursor: pointer;
-    padding: 0.35rem 0.45rem;
-    border-radius: 6px;
-    transition: background 0.12s ease;
-    line-height: 1;
+    padding: 0.3rem 0.55rem;
+    border-radius: 4px;
+    transition: background 0.12s ease, color 0.12s ease;
+    line-height: 1.2;
 }
 
 .btn-delete-function:hover {
@@ -1509,7 +1512,7 @@ footer {
 
 .btn-delete-function:focus-visible {
     outline: 2px solid #c0392b;
-    outline-offset: 2px;
+    outline-offset: 1px;
 }
 
 /* Inline error onder een input — past bij submodal-fout stijl */

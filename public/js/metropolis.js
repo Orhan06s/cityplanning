@@ -683,7 +683,7 @@ if (zoektermInput) {
         delBtn.setAttribute('type', 'button');
         delBtn.setAttribute('aria-label', (i18n.delete || 'Verwijder') + ' ' + data.function_name);
         delBtn.title = (i18n.delete || 'Verwijder') + ' ' + data.function_name;
-        delBtn.textContent = '🗑️';
+        delBtn.textContent = (i18n.delete || 'Verwijder');
         actiesTd.appendChild(delBtn);
         tr.appendChild(actiesTd);
 
