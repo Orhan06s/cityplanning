@@ -2,6 +2,11 @@
 
 <?php $__env->startSection('content'); ?>
 
+<script>
+    window.metroEffectsMatrix = <?php echo json_encode($effectsMatrix, 15, 512) ?>;
+    window.metroGridCols = 4;
+</script>
+
 <?php echo $__env->make('partials.totalen', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
 <div class="container">

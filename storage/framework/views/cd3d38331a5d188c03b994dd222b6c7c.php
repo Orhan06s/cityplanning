@@ -10,7 +10,7 @@
 
 <div class="totalen-paneel" role="region" aria-label="<?php echo e(__('Effectenmatrix')); ?>">
     <div class="totalen-titel"><?php echo e(__('Effecten per stadsfunctie en categorie')); ?></div>
-    <div class="totalen-grid">
+    <div class="totalen-grid" id="totalen-grid">
         <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <?php
                 $score   = $effecten[$cat] ?? 0;
@@ -18,9 +18,9 @@
                 $teken   = $score > 0 ? "+{$score}" : (string) $score;
                 $label   = $catLabels[$cat] ?? $cat;
             ?>
-            <div class="totaal-kaart <?php echo e($klasse); ?>">
+            <div class="totaal-kaart <?php echo e($klasse); ?>" data-category="<?php echo e($cat); ?>">
                 <span class="totaal-label"><?php echo e($label); ?></span>
-                <span class="totaal-score"><?php echo e($teken); ?></span>
+                <span class="totaal-score" data-score><?php echo e($teken); ?></span>
             </div>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>

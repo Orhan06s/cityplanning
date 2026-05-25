@@ -12,9 +12,23 @@
 
     <header>
         <div class="header-inner">
-            <div>
-                <h1> Metropolis</h1>
+            <div class="header-merk">
+                <h1>Metropolis</h1>
             </div>
+
+            <nav class="header-nav" aria-label="<?php echo e(__('Hoofdnavigatie')); ?>">
+                <a href="<?php echo e(route('home')); ?>"
+                   class="nav-link <?php echo e(request()->routeIs('home') ? 'is-actief' : ''); ?>">
+                    <?php echo e(__('Stadsgebied')); ?>
+
+                </a>
+                <a href="<?php echo e(route('effects.manager')); ?>"
+                   class="nav-link <?php echo e(request()->routeIs('effects.manager') ? 'is-actief' : ''); ?>">
+                    <?php echo e(__('Effecten beheren')); ?>
+
+                </a>
+            </nav>
+
             <div class="taal-knop">
                 <a href="<?php echo e(route('taal', 'nl')); ?>" class="taal-vlag <?php echo e(app()->getLocale() === 'nl' ? 'actief' : ''); ?>" title="Nederlands" aria-label="Nederlands">
                     <span class="fi fi-nl"></span>
@@ -49,6 +63,27 @@
         <p>Metropolis Simulator &copy; <?php echo e(date('Y')); ?></p>
     </footer>
 
+    <script>
+        window.metroI18n = {
+            saved: <?php echo json_encode(__('Opgeslagen'), 15, 512) ?>,
+            saving: <?php echo json_encode(__('Opslaan...'), 15, 512) ?>,
+            saveError: <?php echo json_encode(__('Fout bij opslaan!'), 15, 512) ?>,
+            addError: <?php echo json_encode(__('Fout bij toevoegen!'), 15, 512) ?>,
+            deleteError: <?php echo json_encode(__('Fout bij verwijderen!'), 15, 512) ?>,
+            nameRequired: <?php echo json_encode(__('Voer een naam in.'), 15, 512) ?>,
+            nameExists: <?php echo json_encode(__('Deze functie bestaat al.'), 15, 512) ?>,
+            nameTooLong: <?php echo json_encode(__('Naam is te lang (max 50 tekens).'), 15, 512) ?>,
+            functionAdded: <?php echo json_encode(__('Functie toegevoegd!'), 15, 512) ?>,
+            functionDeleted: <?php echo json_encode(__('Functie verwijderd!'), 15, 512) ?>,
+            noResults: <?php echo json_encode(__('Geen functies gevonden.'), 15, 512) ?>,
+            functionCount: <?php echo json_encode(__(':count functies'), 15, 512) ?>,
+            delete: <?php echo json_encode(__('Verwijder'), 15, 512) ?>,
+            resetDone: <?php echo json_encode(__('Effecten gereset naar standaardwaarden!'), 15, 512) ?>,
+            resetError: <?php echo json_encode(__('Fout bij resetten.'), 15, 512) ?>,
+            invalidNumber: <?php echo json_encode(__('Ongeldig getal'), 15, 512) ?>,
+            rangeError: <?php echo json_encode(__('Waarde moet tussen -5 en 5 zijn'), 15, 512) ?>,
+        };
+    </script>
     <script src="<?php echo e(asset('js/metropolis.js')); ?>?v=<?php echo e(filemtime(public_path('js/metropolis.js'))); ?>"></script>
 </body>
 </html>

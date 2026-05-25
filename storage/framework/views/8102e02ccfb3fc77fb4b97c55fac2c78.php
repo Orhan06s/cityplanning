@@ -4,6 +4,11 @@
              role="gridcell"
              tabindex="0"
              data-cell-id="<?php echo e($cell->id); ?>"
+             data-position="<?php echo e($cell->position); ?>"
+             <?php if($cell->destination): ?>
+                 data-function-name="<?php echo e($cell->destination->name); ?>"
+                 data-category="<?php echo e($cell->destination->category); ?>"
+             <?php endif; ?>
              aria-label="Cel <?php echo e($cell->position + 1); ?>: <?php echo e($cell->destination ? $cell->destination->getNaam() : __('leeg')); ?>">
 
             <?php if($cell->destination): ?>
