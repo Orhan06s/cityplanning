@@ -149,7 +149,11 @@ document.querySelectorAll('.cel').forEach(function(cel) {
         var id = e.dataTransfer.getData('text/plain');
         if (id) {
             resetGroupSelection();
-            submitForm('/place', { cell_id: cel.dataset.cellId, destination_id: id });
+            submitForm('/place', {
+                cell_id: cel.dataset.cellId,
+                destination_id: id,
+                size: window.metroGridSize || 12
+            });
         }
     });
 
@@ -160,7 +164,11 @@ document.querySelectorAll('.cel').forEach(function(cel) {
         // Library-item geselecteerd + lege cel → plaatsen
         if (geselecteerdId && cel.classList.contains('leeg')) {
             resetGroupSelection();
-            submitForm('/place', { cell_id: cel.dataset.cellId, destination_id: geselecteerdId });
+            submitForm('/place', {
+                cell_id: cel.dataset.cellId,
+                destination_id: geselecteerdId,
+                size: window.metroGridSize || 12
+            });
             return;
         }
 
