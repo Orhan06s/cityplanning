@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             DestinationSeeder::class,
             GridCellSeeder::class,
             FunctionEffectSeeder::class,
+            AdminSeeder::class,
         ]);
     }
 }

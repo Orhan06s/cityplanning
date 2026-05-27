@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Mail\NewFunctionAdded;
+use App\Models\Admin;
 use App\Models\Destination;
 use App\Models\FunctionEffect;
 use App\Models\GridCell;
@@ -107,6 +110,22 @@ class EffectsController extends Controller
                 ]);
             }
         });
+
+        // Stuur een notificatie-mail naar alle geregistreerde admins
+        // Try-catch zodat een mail-fout nooit de functie-toevoeging blokkeert
+        try {
+            Admin::all()->each(function (Admin $admin) use ($name, $category, $validated, $icon) {
+                Mail::to($admin->email, $admin->name)
+                    ->send(new NewFunctionAdded(
+                        $name,
+                        $category,
+                        $validated['description'] ?? null,
+                        $icon,
+                    ));
+            });
+        } catch (\Exception $e) {
+            \Log::warning('Mail kon niet verstuurd worden: ' . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,
