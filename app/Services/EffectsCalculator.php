@@ -88,6 +88,7 @@ class EffectsCalculator
             $totals[$cat] = 0;
         }
 
+        // Basis-punten per functie
         foreach ($gridCells as $cell) {
             if (!$cell->destination) {
                 continue;
@@ -106,7 +107,47 @@ class EffectsCalculator
             }
         }
 
+        // Bonus-punten voor functies die naast elkaar staan (BES.3.3)
+        $this->applyAdjacencyBonuses($gridCells, $totals);
+
         return $totals;
+    }
+
+    private function applyAdjacencyBonuses($gridCells, array &$totals): void
+    {
+        $bonusPairs = config('function-rules.bonus_pairs', []);
+        $cols       = config('function-rules.grid_cols', 4);
+
+        if (empty($bonusPairs)) return;
+
+        // Map positie -> functienaam
+        $byPos = [];
+        foreach ($gridCells as $cell) {
+            if ($cell->destination) {
+                $byPos[$cell->position] = $cell->destination->name;
+            }
+        }
+
+        // Per cel naar rechts/onder kijken — zo telt elk paar maar 1x
+        foreach ($byPos as $pos => $name) {
+            $col = $pos % $cols;
+            $neighbors = [$pos + $cols]; // onder
+            if ($col < $cols - 1) $neighbors[] = $pos + 1; // rechts
+
+            foreach ($neighbors as $nPos) {
+                if (!isset($byPos[$nPos])) continue;
+                $other = $byPos[$nPos];
+                if ($other === $name) continue;
+
+                foreach ($bonusPairs as $bp) {
+                    if (in_array($name, $bp['functions'], true) && in_array($other, $bp['functions'], true)) {
+                        if (isset($totals[$bp['category']])) {
+                            $totals[$bp['category']] += $bp['points'];
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public function validate()

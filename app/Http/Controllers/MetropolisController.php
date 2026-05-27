@@ -49,13 +49,60 @@ class MetropolisController extends Controller
             'size'           => 'nullable|integer|between:6,64',
         ]);
 
-        $cell = GridCell::find($request->cell_id);
+        $cell        = GridCell::find($request->cell_id);
+        $destination = Destination::find($request->destination_id);
+        $size        = $request->input('size', 12);
+
+        // Check verboden buren (BES.3.2)
+        $conflict = $this->findForbiddenNeighbor($cell, $destination->name);
+        if ($conflict) {
+            return redirect('/?size=' . $size)->with('error',
+                __(':a mag niet naast :b worden geplaatst.', [
+                    'a' => __($destination->name),
+                    'b' => __($conflict),
+                ])
+            );
+        }
+
         $cell->destination_id = $request->destination_id;
         $cell->save();
 
-        // Behoud de gekozen grid size bij het redirecten
-        $size = $request->input('size', 12);
         return redirect('/?size=' . $size)->with('success', __('Functie geplaatst!'));
+    }
+
+    // Geeft de naam van een verboden buurfunctie terug, of null.
+    private function findForbiddenNeighbor(GridCell $cell, string $newFunction): ?string
+    {
+        $forbidden = config('function-rules.forbidden_pairs', []);
+        $cols      = config('function-rules.grid_cols', 4);
+
+        $neighbors = GridCell::with('destination')
+            ->whereIn('position', $this->neighborPositions($cell->position, $cols))
+            ->get();
+
+        foreach ($neighbors as $n) {
+            if (!$n->destination) continue;
+            $other = $n->destination->name;
+
+            foreach ($forbidden as $pair) {
+                if ($newFunction === $other) continue;
+                if (in_array($newFunction, $pair, true) && in_array($other, $pair, true)) {
+                    return $other;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // Posities van de directe buren (boven, onder, links, rechts).
+    private function neighborPositions(int $pos, int $cols): array
+    {
+        $col = $pos % $cols;
+        $list = [$pos + $cols, $pos - $cols]; // onder, boven
+        if ($col > 0)         $list[] = $pos - 1;
+        if ($col < $cols - 1) $list[] = $pos + 1;
+        return $list;
     }
 
     public function remove(Request $request)
