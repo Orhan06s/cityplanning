@@ -6,22 +6,39 @@
     window.metroEffectsMatrix = @json($effectsMatrix);
     window.metroGridCols = Math.ceil(Math.sqrt({{ $gridSize }}));
     window.metroGridSize = {{ $gridSize }};
+    window.metroCanEdit = {{ auth()->user()->canEdit() ? 'true' : 'false' }};
 </script>
 
 @include('partials.effects-menu')
 
 @include('partials.totalen')
 
+@auth
+    @if(auth()->user()->isViewer())
+        <div style="background:#fef9c3;border:1px solid #fde047;color:#854d0e;padding:.6rem 1rem;font-size:.88rem;text-align:center;">
+            {{ __('Je bekijkt dit als Viewer — je kunt niets aanpassen.') }}
+        </div>
+    @endif
+@endauth
+
 <div class="container">
 
-    <div class="library">
-        <h2>{{ __('Functiebibliotheek') }}</h2>
-        @include('partials.library')
-    </div>
+    @auth
+        @if(auth()->user()->canEdit())
+            <div class="library">
+                <h2>{{ __('Functiebibliotheek') }}</h2>
+                @include('partials.library')
+            </div>
+        @endif
+    @endauth
 
     <div class="grid-wrapper">
         <h2>{{ __('Stadsgebied') }}
-            <button id="clear-grid-btn" class="btn btn-small" style="margin-left:12px">{{ __('Leeg grid') }}</button>
+            @auth
+                @if(auth()->user()->canEdit())
+                    <button id="clear-grid-btn" class="btn btn-small" style="margin-left:12px">{{ __('Leeg grid') }}</button>
+                @endif
+            @endauth
         </h2>
 
         <form action="{{ url('/') }}" method="GET" class="grid-size-form">
