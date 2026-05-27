@@ -37,10 +37,6 @@
                            class="nav-link {{ request()->routeIs('effects.manager') ? 'is-actief' : '' }}">
                             {{ __('Effecten beheren') }}
                         </a>
-                        <a href="{{ route('admin.users') }}"
-                           class="nav-link {{ request()->routeIs('admin.*') ? 'is-actief' : '' }}">
-                            {{ __('Gebruikers') }}<span class="nav-role-badge">Admin</span>
-                        </a>
                     @endif
                 @endauth
             </nav>
