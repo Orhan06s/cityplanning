@@ -10,11 +10,20 @@ use App\Services\EffectsCalculator;
 
 class MetropolisController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Altijd alle bestemmingen laden (zoeken gebeurt in de browser via JS)
+        // Grid size uit query string (?size=N), default 12, clamp 6-64
+        $size = (int) $request->query('size', 12);
+        if ($size < 6)  $size = 6;
+        if ($size > 64) $size = 64;
+
         $destinationsByCategory = Destination::all()->groupBy('category');
-        $gridCells = GridCell::with('destination')->orderBy('position')->get();
+
+        // Alleen de eerste N cellen tonen
+        $gridCells = GridCell::with('destination')
+            ->orderBy('position')
+            ->take($size)
+            ->get();
 
         // Effecten berekenen via de service.
         $calculator    = new EffectsCalculator();
@@ -28,6 +37,7 @@ class MetropolisController extends Controller
             'effecten'               => $effecten,
             'categories'             => $categories,
             'effectsMatrix'          => $effectsMatrix,
+            'gridSize'               => $size,
         ]);
     }
 
@@ -36,19 +46,23 @@ class MetropolisController extends Controller
         $request->validate([
             'cell_id'        => 'required|integer|exists:grid_cells,id',
             'destination_id' => 'required|integer|exists:destinations,id',
+            'size'           => 'nullable|integer|between:6,64',
         ]);
 
         $cell = GridCell::find($request->cell_id);
         $cell->destination_id = $request->destination_id;
         $cell->save();
 
-        return redirect('/')->with('success', __('Functie geplaatst!'));
+        // Behoud de gekozen grid size bij het redirecten
+        $size = $request->input('size', 12);
+        return redirect('/?size=' . $size)->with('success', __('Functie geplaatst!'));
     }
 
     public function remove(Request $request)
     {
         $request->validate([
             'cell_id' => 'required|integer|exists:grid_cells,id',
+            'size'    => 'nullable|integer|between:6,64',
         ]);
 
         $cell = GridCell::find($request->cell_id);
@@ -62,7 +76,8 @@ class MetropolisController extends Controller
             $cell->save();
         }
 
-        return redirect('/')->with('success', __('Functie verwijderd!'));
+        $size = $request->input('size', 12);
+        return redirect('/?size=' . $size)->with('success', __('Functie verwijderd!'));
     }
 
     // Twee cellen koppelen tot één gekoppelde groep (of een cel weer loskoppelen)
@@ -161,10 +176,13 @@ class MetropolisController extends Controller
         $anchorCell = $groupCells->first();
         $delta = $target->position - $anchorCell->position;
 
+        // Maximale positie = aantal cellen in DB
+        $maxPos = (int) GridCell::count();
+
         $newPositions = [];
         foreach ($groupCells as $cell) {
             $newPos = $cell->position + $delta;
-            if ($newPos < 0 || $newPos >= 12) {
+            if ($newPos < 0 || $newPos >= $maxPos) {
                 return response()->json(['success' => false, 'message' => __('Groep valt buiten het grid.')], 422);
             }
             $newPositions[$cell->id] = $newPos;

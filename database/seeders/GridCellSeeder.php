@@ -9,7 +9,8 @@ class GridCellSeeder extends Seeder
 {
     public function run(): void
     {
-        for ($i = 0; $i < 12; $i++) {
+        // Max grid size is 64 → maak alle cellen vooraf aan
+        for ($i = 0; $i < 64; $i++) {
             GridCell::create([
                 'position' => $i,
                 'destination_id' => null,

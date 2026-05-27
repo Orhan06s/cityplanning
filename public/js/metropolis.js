@@ -149,7 +149,11 @@ document.querySelectorAll('.cel').forEach(function(cel) {
         var id = e.dataTransfer.getData('text/plain');
         if (id) {
             resetGroupSelection();
-            submitForm('/place', { cell_id: cel.dataset.cellId, destination_id: id });
+            submitForm('/place', {
+                cell_id: cel.dataset.cellId,
+                destination_id: id,
+                size: window.metroGridSize || 12
+            });
         }
     });
 
@@ -160,7 +164,11 @@ document.querySelectorAll('.cel').forEach(function(cel) {
         // Library-item geselecteerd + lege cel → plaatsen
         if (geselecteerdId && cel.classList.contains('leeg')) {
             resetGroupSelection();
-            submitForm('/place', { cell_id: cel.dataset.cellId, destination_id: geselecteerdId });
+            submitForm('/place', {
+                cell_id: cel.dataset.cellId,
+                destination_id: geselecteerdId,
+                size: window.metroGridSize || 12
+            });
             return;
         }
 
@@ -398,6 +406,28 @@ if (clearGridBtn) {
         }).catch(function() { alert('Fout bij legen van grid.'); });
     });
 }
+
+
+// ============================================
+// EFFECTEN-MENU bovenaan: sluit andere dropdowns als er één open gaat
+// ============================================
+
+document.querySelectorAll('.effecten-details').forEach(function(d) {
+    d.addEventListener('toggle', function() {
+        if (!d.open) return;
+        document.querySelectorAll('.effecten-details[open]').forEach(function(ander) {
+            if (ander !== d) ander.open = false;
+        });
+    });
+});
+
+// Klik buiten het menu → alle dropdowns sluiten
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.effecten-details')) return;
+    document.querySelectorAll('.effecten-details[open]').forEach(function(d) {
+        d.open = false;
+    });
+});
 
 
 // ============================================

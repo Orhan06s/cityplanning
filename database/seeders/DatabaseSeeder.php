@@ -9,9 +9,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            UserSeeder::class,
             DestinationSeeder::class,
             GridCellSeeder::class,
             FunctionEffectSeeder::class,
+            AdminSeeder::class,
         ]);
     }
 }

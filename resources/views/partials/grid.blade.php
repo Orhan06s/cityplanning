@@ -1,5 +1,13 @@
-<div class="grid" role="grid" aria-label="{{ __('Stadsgebied grid') }}">
-    @php $COLUMNS = 4; @endphp
+@php
+    // Aantal kolommen = afgeronde wortel van grid-grootte (12 → 4 cols, 16 → 4, 25 → 5)
+    $COLUMNS = (int) ceil(sqrt($gridSize));
+@endphp
+
+<div class="grid"
+     role="grid"
+     aria-label="{{ __('Stadsgebied grid') }}"
+     style="grid-template-columns: repeat({{ $COLUMNS }}, 1fr); grid-template-rows: none;">
+
     @foreach($gridCells as $cell)
         @php
             $row = intdiv($cell->position, $COLUMNS) + 1;
@@ -34,6 +42,7 @@
                 <form action="{{ route('remove') }}" method="POST">
                     @csrf
                     <input type="hidden" name="cell_id" value="{{ $cell->id }}">
+                    <input type="hidden" name="size" value="{{ $gridSize }}">
                     <button type="submit" class="verwijder-btn"
                             aria-label="{{ __('Verwijder') }} {{ $cell->destination->getNaam() }}">✕</button>
                 </form>

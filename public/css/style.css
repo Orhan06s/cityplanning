@@ -355,6 +355,145 @@ footer {
     color: #3f4d3c;
 }
 
+/* Grid grootte formulier */
+.grid-size-form {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    margin: 0.5rem 0 0.85rem;
+    flex-wrap: wrap;
+}
+
+.grid-size-form label {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #3f4d3c;
+}
+
+.grid-size-form input[type="number"] {
+    padding: 0.35rem 0.5rem;
+    width: 72px;
+    border: 1px solid #c8d8c4;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: inherit;
+}
+
+.grid-size-form input[type="number"]:focus {
+    outline: none;
+    border-color: #2d4a22;
+    box-shadow: 0 0 0 3px rgba(45, 74, 34, 0.14);
+}
+
+/* Effectenmatrix als horizontaal dropdown-menu bovenaan */
+.effecten-menu {
+    background: #2d4a22;
+    padding: 0.5rem 1rem;
+    border-bottom: 2px solid #1e3a1a;
+}
+
+.effecten-menu-lijst {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    max-width: 1200px;
+}
+
+.effecten-menu-item {
+    position: relative;
+}
+
+.effecten-details {
+    position: relative;
+}
+
+.effecten-summary {
+    list-style: none;
+    cursor: pointer;
+    color: #fff;
+    padding: 0.45rem 0.75rem;
+    border-radius: 4px;
+    user-select: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: background 0.12s ease;
+}
+
+.effecten-summary::-webkit-details-marker { display: none; }
+.effecten-summary::marker { display: none; content: ''; }
+
+.effecten-summary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.effecten-details[open] > .effecten-summary {
+    background: #fff;
+    color: #2d4a22;
+}
+
+.effecten-chevron {
+    font-size: 0.7rem;
+    transition: transform 0.15s ease;
+}
+
+.effecten-details[open] .effecten-chevron {
+    transform: rotate(180deg);
+}
+
+.effecten-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    background: #fff;
+    border: 1px solid #d0d8cc;
+    border-radius: 6px;
+    padding: 0.5rem 0.7rem;
+    min-width: 170px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.effecten-rij {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 3px 0;
+    font-size: 0.82rem;
+}
+
+.effecten-cat {
+    text-transform: capitalize;
+    color: #444;
+}
+
+.effecten-waarde {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    min-width: 1.8em;
+    text-align: right;
+}
+
+.effecten-waarde.is-positief { color: #155215; }
+.effecten-waarde.is-negatief { color: #922b21; }
+.effecten-waarde.is-neutraal { color: #888; }
+
+@media (max-width: 768px) {
+    .effecten-summary {
+        font-size: 0.78rem;
+        padding: 0.35rem 0.55rem;
+    }
+    .effecten-dropdown {
+        min-width: 150px;
+        font-size: 0.8rem;
+    }
+}
+
 /* SIM.10 — tooltip met effect-waarden bij hover op geplaatste cel */
 .cel-tooltip {
     position: absolute;
@@ -1327,6 +1466,23 @@ footer {
 
 .btn-danger:hover:not(:disabled) {
     background: #a02315;
+}
+
+.btn-small {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+    background: #2d4a22;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    transition: background 0.12s ease;
+}
+
+.btn-small:hover {
+    background: #1e3a1a;
 }
 
 .btn-reset {
