@@ -141,7 +141,7 @@
     <div class="auth-card">
 
         <div class="auth-logo">
-            <h1>🏙️ Metropolis</h1>
+            <h1>Metropolis</h1>
             <p>Metropolis van de Toekomst</p>
         </div>
 
