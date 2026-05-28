@@ -13,7 +13,7 @@ class AdminSeeder extends Seeder
             ['id' => 1],
             [
                 'name'       => 'Admin',
-                'email'      => 'orhemrosm@gmail.com',
+                'email'      => 't.ezaim@student.avans.nl',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]
