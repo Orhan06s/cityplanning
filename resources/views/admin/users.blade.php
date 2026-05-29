@@ -4,7 +4,7 @@
 <div class="gebruikers-pagina">
     <div class="gebruikers-header">
         <h2>{{ __('Gebruikersbeheer') }}</h2>
-        <a href="{{ route('register') }}" class="btn-blauw">
+        <a href="{{ route('admin.users.create') }}" class="btn-blauw">
             + {{ __('Nieuwe gebruiker') }}
         </a>
     </div>

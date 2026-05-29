@@ -27,6 +27,10 @@
                            class="nav-link {{ request()->routeIs('effects.manager') ? 'is-actief' : '' }}">
                             {{ __('Effecten beheren') }}
                         </a>
+                        <a href="{{ route('admin.users') }}"
+                           class="nav-link {{ request()->routeIs('admin.users*') ? 'is-actief' : '' }}">
+                            {{ __('Gebruikers') }}
+                        </a>
                     @endif
                 @endauth
             </nav>
