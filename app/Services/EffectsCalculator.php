@@ -88,7 +88,9 @@ class EffectsCalculator
             $totals[$cat] = 0;
         }
 
-        // Basis-punten per functie
+        // Hoeveelste keer we deze functienaam al hebben gezien
+        $seen = [];
+
         foreach ($gridCells as $cell) {
             if (!$cell->destination) {
                 continue;
@@ -100,9 +102,12 @@ class EffectsCalculator
                 continue;
             }
 
+            $seen[$naam] = ($seen[$naam] ?? 0) + 1;
+            $instance = $seen[$naam];
+
             foreach ($this->functions[$naam] as $cat => $punten) {
                 if (isset($totals[$cat])) {
-                    $totals[$cat] += $punten;
+                    $totals[$cat] += $this->adjustForInstance($punten, $instance);
                 }
             }
         }
@@ -111,6 +116,16 @@ class EffectsCalculator
         $this->applyAdjacencyBonuses($gridCells, $totals);
 
         return $totals;
+    }
+
+    // Positieve punten verminderen bij herhaling van dezelfde functie.
+    // 1e keer = vol, 2e = helft (afgerond naar boven), 3e+ = 0. Negatief blijft.
+    private function adjustForInstance(int $punten, int $instance): int
+    {
+        if ($punten <= 0) return $punten;
+        if ($instance === 1) return $punten;
+        if ($instance === 2) return (int) ceil($punten / 2);
+        return 0;
     }
 
     private function applyAdjacencyBonuses($gridCells, array &$totals): void
