@@ -16,7 +16,7 @@
             $row = intdiv($cell->position, $COLUMNS) + 1;
             $col = ($cell->position % $COLUMNS) + 1;
         @endphp
-        <div class="cel {{ $cell->destination ? 'bezet' : 'leeg' }} {{ $cell->linked_group_id ? 'linked' : '' }}"
+        <div class="cel {{ $cell->destination ? 'bezet' : 'leeg' }} {{ $cell->linked_group_id ? 'linked' : '' }} {{ $cell->is_destination ? 'is-bestemming' : '' }}"
              role="gridcell"
              tabindex="0"
              data-cell-id="{{ $cell->id }}"
@@ -24,11 +24,12 @@
              data-row="{{ $row }}"
              data-col="{{ $col }}"
              data-linked-group="{{ $cell->linked_group_id ?? '' }}"
+             data-is-destination="{{ $cell->is_destination ? '1' : '0' }}"
              @if($cell->destination)
                  data-function-name="{{ $cell->destination->name }}"
                  data-category="{{ $cell->destination->category }}"
              @endif
-             aria-label="Cel {{ $cell->position + 1 }}: {{ $cell->destination ? $cell->destination->getNaam() : __('leeg') }}">
+             aria-label="Cel {{ $cell->position + 1 }}: {{ $cell->destination ? $cell->destination->getNaam() : __('leeg') }}{{ $cell->is_destination ? ' (' . __('bestemming') . ')' : '' }}"">
 
             @if($cell->destination)
                 @if(str_starts_with($cell->destination->icon, '/'))
@@ -41,6 +42,29 @@
                 @if($cell->linked_group_id)
                     <span class="cel-link-badge" aria-hidden="true">🔗</span>
                 @endif
+
+                @if($cell->is_destination)
+                    <span class="cel-bestemming-badge" aria-label="{{ __('bestemming') }}" title="{{ __('Ingesteld als bestemming') }}">📍</span>
+                @endif
+
+                {{-- Bestemmingsknop: zichtbaar als de cel geselecteerd is --}}
+                <div class="cel-acties" aria-hidden="true">
+                    @if(!$cell->is_destination)
+                        <button class="btn-stel-bestemming"
+                                data-cell-id="{{ $cell->id }}"
+                                type="button"
+                                aria-label="{{ __('Stel in als bestemming') }}">
+                            📍 {{ __('Bestemming') }}
+                        </button>
+                    @else
+                        <button class="btn-verwijder-bestemming"
+                                data-cell-id="{{ $cell->id }}"
+                                type="button"
+                                aria-label="{{ __('Verwijder als bestemming') }}">
+                            ✕ {{ __('Bestemming') }}
+                        </button>
+                    @endif
+                </div>
 
                 <form action="{{ route('remove') }}" method="POST">
                     @csrf

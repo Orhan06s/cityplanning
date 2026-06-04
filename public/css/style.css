@@ -1,5 +1,259 @@
 /* Metropolis - Stadsplannings simulator */
 
+/* ============================================
+   BESTEMMINGEN PANEL
+   ============================================ */
+.bestemmingen-panel {
+    width: 220px;
+    flex-shrink: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    align-self: flex-start;
+}
+
+.bestemmingen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #2d4a22;
+}
+
+.bestemmingen-titel {
+    font-size: 0.95rem;
+    color: #fff;
+    margin: 0;
+    font-weight: 700;
+}
+
+.bestemmingen-count {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 1px 8px;
+    min-width: 22px;
+    text-align: center;
+}
+
+/* Lege staat */
+.bestemmingen-leeg-staat {
+    padding: 20px 12px;
+    text-align: center;
+    color: #888;
+}
+
+.bestemmingen-leeg-icoon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+
+.bestemmingen-leeg-staat p {
+    font-size: 0.82rem;
+    margin: 0 0 4px;
+    color: #555;
+    font-weight: 600;
+}
+
+.bestemmingen-leeg-hint {
+    font-size: 0.75rem !important;
+    color: #999 !important;
+    font-weight: normal !important;
+}
+
+/* Lijst */
+.bestemmingen-lijst {
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.bestemmingen-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    background: #f8faf7;
+    border: 1px solid #dce8d8;
+    border-radius: 6px;
+    transition: background 0.12s ease;
+}
+
+.bestemmingen-item:hover {
+    background: #eef5eb;
+}
+
+.bestemmingen-item-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.bestemmingen-img-icon {
+    width: 1.3em;
+    height: 1.3em;
+    object-fit: cover;
+    border-radius: 3px;
+}
+
+.bestemmingen-item-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.bestemmingen-item-tekst {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.bestemmingen-item-naam {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e3a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bestemmingen-leeg-cel {
+    color: #999;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.bestemmingen-item-cel {
+    font-size: 0.7rem;
+    color: #888;
+}
+
+/* Categorie badge */
+.bestemmingen-item-cat {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: #e8f5e9;
+    color: #2d4a22;
+    display: inline-block;
+    width: fit-content;
+}
+
+.bestemmingen-cat-veiligheid    { background: #dbeafe; color: #1d4ed8; }
+.bestemmingen-cat-recreatie     { background: #d1fae5; color: #065f46; }
+.bestemmingen-cat-milieukwaliteit { background: #dcfce7; color: #166534; }
+.bestemmingen-cat-voorzieningen { background: #fef3c7; color: #92400e; }
+.bestemmingen-cat-mobiliteit    { background: #ede9fe; color: #5b21b6; }
+
+/* Verwijder-knop in lijst */
+.bestemmingen-item-verwijder {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 3px;
+    line-height: 1;
+    transition: color 0.12s ease, background 0.12s ease;
+}
+
+.bestemmingen-item-verwijder:hover {
+    color: #c0392b;
+    background: #fde8e6;
+}
+
+/* Cel badge */
+.cel-bestemming-badge {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    font-size: 0.8rem;
+    line-height: 1;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.cel.is-bestemming {
+    border-color: #d97706;
+    background-color: #fffbeb;
+}
+
+/* Actieknopje op de cel (verschijnt bij selectie) */
+.cel-acties {
+    display: none;
+    gap: 4px;
+    margin-top: 4px;
+    justify-content: center;
+}
+
+.btn-stel-bestemming {
+    font-size: 0.7rem;
+    font-family: inherit;
+    font-weight: 700;
+    background: #d97706;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-stel-bestemming:hover {
+    background: #b45309;
+}
+
+.btn-verwijder-bestemming {
+    font-size: 0.7rem;
+    font-family: inherit;
+    font-weight: 700;
+    background: #fde8e6;
+    color: #c0392b;
+    border: 1px solid #f0bcb5;
+    border-radius: 4px;
+    padding: 3px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-verwijder-bestemming:hover {
+    background: #fecaca;
+}
+
+@media (max-width: 900px) {
+    .bestemmingen-panel {
+        width: 100%;
+    }
+}
+
+.viewer-banner {
+    background: #fef9c3;
+    border: 1px solid #fde047;
+    color: #854d0e;
+    padding: .6rem 1rem;
+    font-size: .88rem;
+    text-align: center;
+}
+
 /* Skip-to-content link — zichtbaar bij Tab, anders verborgen */
 .skip-link {
     position: absolute;

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class GridCell extends Model
 {
-    protected $fillable = ['position', 'destination_id', 'linked_group_id'];
+    protected $fillable = ['position', 'destination_id', 'linked_group_id', 'is_destination'];
 
     public function destination()
     {

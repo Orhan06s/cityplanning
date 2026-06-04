@@ -117,6 +117,7 @@ function resetGroupSelection() {
     document.querySelectorAll('.cel.group-selected').forEach(function(cel) {
         cel.classList.remove('group-selected');
     });
+    updateBestemmingActies(null);
 }
 
 function selectGroupCell(cel) {
@@ -131,6 +132,7 @@ function selectGroupCell(cel) {
     } else {
         cel.classList.add('group-selected');
     }
+    updateBestemmingActies(cel);
 }
 
 // Library items: kunnen gesleept worden EN aangeklikt voor selectie
@@ -399,6 +401,53 @@ document.querySelectorAll('.cel').forEach(function(cel) {
 // Verwijder-knop niet door laten klikken naar de cel-click
 document.querySelectorAll('.verwijder-btn').forEach(function(btn) {
     btn.addEventListener('click', function(e) { e.stopPropagation(); });
+});
+
+// ============================================
+// BESTEMMINGEN — toon knoppen bij geselecteerde cel
+// ============================================
+
+// Toon/verberg de bestemmings-actieknop op basis van cel-selectie
+function updateBestemmingActies(geselecteerdeCel) {
+    // Verberg alle acties eerst
+    document.querySelectorAll('.cel-acties').forEach(function(el) {
+        el.setAttribute('aria-hidden', 'true');
+        el.style.display = 'none';
+    });
+
+    if (geselecteerdeCel) {
+        var acties = geselecteerdeCel.querySelector('.cel-acties');
+        if (acties) {
+            acties.setAttribute('aria-hidden', 'false');
+            acties.style.display = 'flex';
+        }
+    }
+}
+
+// Bestemmings-knoppen AJAX
+document.addEventListener('click', function(e) {
+
+    // Stel in als bestemming
+    var markBtn = e.target.closest('.btn-stel-bestemming');
+    if (markBtn) {
+        e.stopPropagation();
+        var cellId = markBtn.dataset.cellId;
+        postJson('/cel/bestemming', { cell_id: cellId }).then(function(data) {
+            if (data.success) location.reload();
+        });
+        return;
+    }
+
+    // Verwijder als bestemming
+    var unmarkBtn = e.target.closest('.btn-verwijder-bestemming');
+    if (unmarkBtn) {
+        e.stopPropagation();
+        var cellId = unmarkBtn.dataset.cellId;
+        postJson('/cel/bestemming/verwijder', { cell_id: cellId }).then(function(data) {
+            if (data.success) location.reload();
+        });
+        return;
+    }
 });
 
 restoreSelectionState();

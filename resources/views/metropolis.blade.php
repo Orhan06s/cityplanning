@@ -17,7 +17,7 @@
 
 @auth
     @if(auth()->user()->isViewer())
-        <div style="background:#fef9c3;border:1px solid #fde047;color:#854d0e;padding:.6rem 1rem;font-size:.88rem;text-align:center;">
+        <div class="viewer-banner">
             {{ __('Je bekijkt dit als Viewer — je kunt niets aanpassen.') }}
         </div>
     @endif
@@ -52,6 +52,8 @@
         <p class="grid-help">Klik op een geplaatste cel om deze te selecteren. Klik een lege cel om de geselecteerde groep te verplaatsen. Klik met de rechtermuisknop een andere bezette cel om de geselecteerde cel ermee te koppelen.</p>
         @include('partials.grid')
     </div>
+
+    @include('partials.bestemmingen')
 
 </div>
 @endsection

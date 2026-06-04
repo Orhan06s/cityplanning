@@ -25,6 +25,12 @@ class MetropolisController extends Controller
             ->take($size)
             ->get();
 
+        // Cellen die als bestemming zijn gemarkeerd (ook zonder functie)
+        $bestemmingen = GridCell::with('destination')
+            ->where('is_destination', true)
+            ->orderBy('position')
+            ->get();
+
         // Effecten berekenen via de service.
         $calculator    = new EffectsCalculator();
         $effecten      = $calculator->calculate($gridCells);
@@ -38,6 +44,7 @@ class MetropolisController extends Controller
             'categories'             => $categories,
             'effectsMatrix'          => $effectsMatrix,
             'gridSize'               => $size,
+            'bestemmingen'           => $bestemmingen,
         ]);
     }
 
@@ -277,6 +284,22 @@ class MetropolisController extends Controller
     public function clearGrid(Request $request)
     {
         GridCell::query()->update(['destination_id' => null, 'linked_group_id' => null]);
+        return response()->json(['success' => true]);
+    }
+
+    // Cel markeren als bestemming
+    public function markDestination(Request $request)
+    {
+        $request->validate(['cell_id' => 'required|integer|exists:grid_cells,id']);
+        GridCell::where('id', $request->cell_id)->update(['is_destination' => true]);
+        return response()->json(['success' => true]);
+    }
+
+    // Bestemming-markering verwijderen van een cel
+    public function unmarkDestination(Request $request)
+    {
+        $request->validate(['cell_id' => 'required|integer|exists:grid_cells,id']);
+        GridCell::where('id', $request->cell_id)->update(['is_destination' => false]);
         return response()->json(['success' => true]);
     }
 }

@@ -34,6 +34,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/group/link', [MetropolisController::class, 'linkGroup']);
         Route::post('/group/move', [MetropolisController::class, 'moveGroup']);
         Route::post('/grid/clear', [MetropolisController::class, 'clearGrid'])->name('grid.clear');
+        Route::post('/cel/bestemming', [MetropolisController::class, 'markDestination'])->name('cel.bestemming');
+        Route::post('/cel/bestemming/verwijder', [MetropolisController::class, 'unmarkDestination'])->name('cel.bestemming.verwijder');
     });
 
     // Admin-only — effecten beheren + gebruikersbeheer
