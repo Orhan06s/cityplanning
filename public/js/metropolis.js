@@ -19,6 +19,20 @@ function postJson(url, data) {
     }).then(function(res) { return res.json(); });
 }
 
+// === Helper: aankondiging naar screenreader sturen ===
+function kondigAan(tekst) {
+    // Gebruik de ingebouwde screenreader als die aanstaat
+    if (window.srSpreek) {
+        window.srSpreek(tekst);
+    }
+    // Altijd ook de aria-live regio bijwerken (voor externe screenreaders zoals NVDA/JAWS)
+    var el = document.getElementById('grid-aankondiging');
+    if (el) {
+        el.textContent = '';
+        setTimeout(function() { el.textContent = tekst; }, 50);
+    }
+}
+
 // === Helper: maak een form en submit het (voor place/remove) ===
 function submitForm(action, velden) {
     var form = document.createElement('form');
@@ -164,6 +178,9 @@ document.querySelectorAll('.cel').forEach(function(cel) {
         // Library-item geselecteerd + lege cel → plaatsen
         if (geselecteerdId && cel.classList.contains('leeg')) {
             resetGroupSelection();
+            var geselecteerdItem = document.querySelector('.library-item.geselecteerd');
+            var functieNaam = geselecteerdItem ? geselecteerdItem.dataset.name : '';
+            kondigAan(functieNaam + ' geplaatst op cel ' + (parseInt(cel.dataset.position, 10) + 1));
             submitForm('/place', {
                 cell_id: cel.dataset.cellId,
                 destination_id: geselecteerdId,

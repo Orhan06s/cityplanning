@@ -3,6 +3,9 @@
     $COLUMNS = (int) ceil(sqrt($gridSize));
 @endphp
 
+{{-- Screenreader-aankondigingen voor grid-acties --}}
+<div id="grid-aankondiging" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
 <div class="grid"
      role="grid"
      aria-label="{{ __('Stadsgebied grid') }}"

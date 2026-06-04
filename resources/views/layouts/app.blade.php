@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Metropolis</title>
+    <title>@yield('title', 'Metropolis')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ filemtime(public_path('css/style.css')) }}">
 </head>
 <body>
+
+    {{-- Skip-to-content: screenreaders en toetsenbordgebruikers kunnen direct naar de inhoud springen --}}
+    <a href="#main-content" class="skip-link">{{ __('Ga naar inhoud') }}</a>
 
     <header>
         <div class="header-inner">
@@ -32,6 +35,12 @@
             </nav>
 
             <div class="header-rechts">
+                {{-- Screenreader knop --}}
+                <button id="sr-knop" class="sr-toggle-btn" aria-pressed="false" aria-label="{{ __('Screenreader inschakelen') }}" type="button">
+                    <span aria-hidden="true">👁</span>
+                    <span class="sr-knop-label">{{ __('Voorlezen') }}</span>
+                </button>
+
                 <div class="taal-knop">
                     <a href="{{ route('taal', 'nl') }}" class="taal-vlag {{ app()->getLocale() === 'nl' ? 'actief' : '' }}" title="Nederlands" aria-label="Nederlands">
                         <span class="fi fi-nl"></span>
@@ -73,7 +82,7 @@
         </div>
     @endif
 
-    <main>
+    <main id="main-content">
         @yield('content')
     </main>
 
@@ -81,6 +90,7 @@
         <p>Metropolis Simulator &copy; {{ date('Y') }}</p>
     </footer>
 
+    <script src="{{ asset('js/screenreader.js') }}?v={{ filemtime(public_path('js/screenreader.js')) }}"></script>
     <script src="{{ asset('js/metropolis.js') }}?v={{ filemtime(public_path('js/metropolis.js')) }}"></script>
 </body>
 </html>

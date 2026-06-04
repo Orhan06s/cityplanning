@@ -39,3 +39,5 @@ class DestinationSeeder extends Seeder
         }
     }
 }
+
+

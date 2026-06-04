@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', __('Effecten beheren') . ' — Metropolis')
+
 @section('content')
 
 <div class="manager-pagina">

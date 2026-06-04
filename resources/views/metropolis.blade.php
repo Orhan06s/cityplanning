@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', __('Stadsgebied') . ' — Metropolis')
+
 @section('content')
 
 <script>

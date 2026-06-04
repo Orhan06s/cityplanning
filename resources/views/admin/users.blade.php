@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', __('Gebruikersbeheer') . ' — Metropolis')
+
 @section('content')
 <div class="gebruikers-pagina">
     <div class="gebruikers-header">
