@@ -156,7 +156,16 @@ document.querySelectorAll('.library-item').forEach(function(item) {
 
 // Grid cellen: kunnen drop ontvangen, geklikt worden, of een groep verslepen
 document.querySelectorAll('.cel').forEach(function(cel) {
-    cel.addEventListener('dragover', function(e) { e.preventDefault(); });
+    cel.addEventListener('dragover', function(e) {
+        e.preventDefault();
+    });
+
+    // Aankondiging alleen bij binnenkomen van een cel (niet continu tijdens dragover)
+    cel.addEventListener('dragenter', function(e) {
+        e.preventDefault();
+        var label = cel.getAttribute('aria-label');
+        if (label) kondigAan(label);
+    });
 
     cel.addEventListener('drop', function(e) {
         e.preventDefault();

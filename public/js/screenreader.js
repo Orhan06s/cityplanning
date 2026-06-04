@@ -80,13 +80,6 @@
 
     updateKnop();
 
-    // Als de screenreader al aanstond, welkom terug
-    if (actief) {
-        window.addEventListener('load', function () {
-            var titel = document.title;
-            spreek('Pagina geladen: ' + titel);
-        });
-    }
 
     // ── Lees voor bij focus (Tab-navigatie) ─────────────
 

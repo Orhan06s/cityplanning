@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetropolisController;
 use App\Http\Controllers\EffectsController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
@@ -10,8 +11,6 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
-    Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
-    Route::post('/register', [RegisteredUserController::class, 'store']);
 });
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout')->middleware('auth');
@@ -37,12 +36,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/grid/clear', [MetropolisController::class, 'clearGrid'])->name('grid.clear');
     });
 
-    // Admin-only — effecten beheren
+    // Admin-only — effecten beheren + gebruikersbeheer
     Route::middleware('role:admin')->group(function () {
         Route::get('/effecten-beheren', [EffectsController::class, 'page'])->name('effects.manager');
         Route::post('/api/effects/update', [EffectsController::class, 'updateEffect']);
         Route::post('/api/effects/add-function', [EffectsController::class, 'addFunction']);
         Route::post('/api/effects/delete-function', [EffectsController::class, 'deleteFunction']);
         Route::post('/api/effects/reset-defaults', [EffectsController::class, 'resetToDefaults']);
+
+        Route::get('/admin/gebruikers', [AdminController::class, 'users'])->name('admin.users');
+        Route::get('/admin/gebruikers/nieuw', [RegisteredUserController::class, 'create'])->name('admin.users.create');
+        Route::post('/admin/gebruikers/nieuw', [RegisteredUserController::class, 'store'])->name('admin.users.store');
+        Route::post('/admin/gebruikers/{user}/verwijderen', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
     });
 });
