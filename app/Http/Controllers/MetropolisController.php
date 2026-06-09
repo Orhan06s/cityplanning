@@ -20,13 +20,13 @@ class MetropolisController extends Controller
         $destinationsByCategory = Destination::all()->groupBy('category');
 
         // Alleen de eerste N cellen tonen
-        $gridCells = GridCell::with('destination')
+        $gridCells = GridCell::with('destination', 'approver')
             ->orderBy('position')
             ->take($size)
             ->get();
 
         // Cellen die als bestemming zijn gemarkeerd (ook zonder functie)
-        $bestemmingen = GridCell::with('destination')
+        $bestemmingen = GridCell::with('destination', 'approver')
             ->where('is_destination', true)
             ->orderBy('position')
             ->get();
@@ -124,9 +124,12 @@ class MetropolisController extends Controller
         if ($cell->linked_group_id) {
             // Verwijder de hele gekoppelde groep in één keer
             GridCell::where('linked_group_id', $cell->linked_group_id)
-                ->update(['destination_id' => null, 'linked_group_id' => null]);
+                ->update(['destination_id' => null, 'linked_group_id' => null, 'approved_at' => null, 'approved_by' => null]);
         } else {
+            // Leeg de cel; een lege cel kan geen goedkeuring houden
             $cell->destination_id = null;
+            $cell->approved_at = null;
+            $cell->approved_by = null;
             $cell->save();
         }
 
@@ -300,6 +303,42 @@ class MetropolisController extends Controller
     {
         $request->validate(['cell_id' => 'required|integer|exists:grid_cells,id']);
         GridCell::where('id', $request->cell_id)->update(['is_destination' => false]);
+        return response()->json(['success' => true]);
+    }
+
+    // REV.3.1 — Bestemming van een gebied goedkeuren (alleen gemeente/admin)
+    public function approveDestination(Request $request)
+    {
+        $request->validate(['cell_id' => 'required|integer|exists:grid_cells,id']);
+
+        $cell = GridCell::find($request->cell_id);
+
+        // Een gebied zonder bestemming kan niet goedgekeurd worden
+        if (!$cell->destination_id) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Dit gebied heeft geen bestemming om goed te keuren.'),
+            ], 422);
+        }
+
+        // Leg vast wie wanneer goedkeurde
+        $cell->approved_at = now();
+        $cell->approved_by = auth()->id();
+        $cell->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    // Goedkeuring weer intrekken (alleen gemeente/admin)
+    public function unapproveDestination(Request $request)
+    {
+        $request->validate(['cell_id' => 'required|integer|exists:grid_cells,id']);
+
+        $cell = GridCell::find($request->cell_id);
+        $cell->approved_at = null;
+        $cell->approved_by = null;
+        $cell->save();
+
         return response()->json(['success' => true]);
     }
 }

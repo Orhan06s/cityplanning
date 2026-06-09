@@ -197,6 +197,78 @@
     background-color: #fffbeb;
 }
 
+/* REV.3.1 — goedgekeurde gebieden */
+.cel.is-goedgekeurd {
+    border-color: #15803d;
+    box-shadow: inset 0 0 0 2px rgba(21, 128, 61, 0.25);
+}
+
+.cel-goedgekeurd-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 0.8rem;
+    line-height: 1;
+    color: #15803d;
+    background: #dcfce7;
+    border-radius: 999px;
+    padding: 1px 5px;
+    font-weight: 700;
+}
+
+.cel-goedkeur-status {
+    font-size: 0.66rem;
+    color: #15803d;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.btn-goedkeuren {
+    font-size: 0.7rem;
+    font-family: inherit;
+    font-weight: 700;
+    background: #15803d;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-goedkeuren:hover {
+    background: #166534;
+}
+
+.btn-goedkeuring-intrekken {
+    font-size: 0.68rem;
+    font-family: inherit;
+    font-weight: 700;
+    background: #fde8e6;
+    color: #c0392b;
+    border: 1px solid #f0bcb5;
+    border-radius: 4px;
+    padding: 2px 7px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-goedkeuring-intrekken:hover {
+    background: #fecaca;
+}
+
+.bestemmingen-item-goedgekeurd {
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: #15803d;
+    background: #dcfce7;
+    border-radius: 3px;
+    padding: 1px 5px;
+    width: fit-content;
+    display: inline-block;
+}
+
 /* Actieknopje op de cel (verschijnt bij selectie) */
 .cel-acties {
     display: none;

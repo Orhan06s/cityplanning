@@ -6,11 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class GridCell extends Model
 {
-    protected $fillable = ['position', 'destination_id', 'linked_group_id', 'is_destination'];
+    protected $fillable = ['position', 'destination_id', 'linked_group_id', 'is_destination', 'approved_at', 'approved_by'];
+
+    protected $casts = ['approved_at' => 'datetime'];
 
     public function destination()
     {
         return $this->belongsTo(Destination::class);
+    }
+
+    // De gebruiker die deze bestemming heeft goedgekeurd
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    // Is deze cel goedgekeurd?
+    public function isApproved(): bool
+    {
+        return $this->approved_at !== null;
     }
 
     public static function normalizedGrid(int $columns = 4, int $rows = 3)
