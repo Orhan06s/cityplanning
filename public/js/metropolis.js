@@ -176,15 +176,24 @@ document.querySelectorAll('.cel').forEach(function(cel) {
         e.preventDefault();
     });
 
-    // Aankondiging alleen bij binnenkomen van een cel (niet continu tijdens dragover)
+    // Aankondiging + visuele highlight bij binnenkomen van een cel
     cel.addEventListener('dragenter', function(e) {
         e.preventDefault();
+        cel.classList.add('drag-over');
         var label = cel.getAttribute('aria-label');
         if (label) kondigAan(label);
     });
 
+    cel.addEventListener('dragleave', function(e) {
+        // Alleen verwijderen als we echt de cel verlaten (niet bij een child element)
+        if (e.target === cel) {
+            cel.classList.remove('drag-over');
+        }
+    });
+
     cel.addEventListener('drop', function(e) {
         e.preventDefault();
+        cel.classList.remove('drag-over');
         var id = e.dataTransfer.getData('text/plain');
         if (id) {
             resetGroupSelection();
