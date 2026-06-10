@@ -36,5 +36,14 @@ class UserSeeder extends Seeder
                 'role'     => 'viewer',
             ]
         );
+
+        User::firstOrCreate(
+            ['email' => 'beleidsmaker@metropolis.nl'],
+            [
+                'name'     => 'Beleidsmaker',
+                'password' => Hash::make('password'),
+                'role'     => 'beleidsmaker',
+            ]
+        );
     }
 }

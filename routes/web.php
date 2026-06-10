@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetropolisController;
 use App\Http\Controllers\EffectsController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PolicyMakerController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
@@ -50,5 +51,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/gebruikers/nieuw', [RegisteredUserController::class, 'create'])->name('admin.users.create');
         Route::post('/admin/gebruikers/nieuw', [RegisteredUserController::class, 'store'])->name('admin.users.store');
         Route::post('/admin/gebruikers/{user}/verwijderen', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+    });
+
+    // Beleidsmaker — eigen dashboard
+    Route::middleware('role:beleidsmaker')->group(function () {
+        Route::get('/beleidsmaker/dashboard', [PolicyMakerController::class, 'index'])->name('beleidsmaker.dashboard');
     });
 });

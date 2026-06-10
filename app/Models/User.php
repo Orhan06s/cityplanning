@@ -45,6 +45,11 @@ class User extends Authenticatable
         return $this->role === 'viewer';
     }
 
+    public function isBeleidsmaker(): bool
+    {
+        return $this->role === 'beleidsmaker';
+    }
+
     /**
      * Kan de gebruiker het grid bewerken?
      * Admin en gebruiker mogen dit.
