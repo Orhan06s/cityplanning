@@ -46,10 +46,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/api/effects/delete-function', [EffectsController::class, 'deleteFunction']);
         Route::post('/api/effects/reset-defaults', [EffectsController::class, 'resetToDefaults']);
 
-        // REV.3.1 — gebied goedkeuren (gemeente = admin)
-        Route::post('/cel/goedkeuren', [MetropolisController::class, 'approveDestination'])->name('cel.goedkeuren');
-        Route::post('/cel/goedkeuren/intrekken', [MetropolisController::class, 'unapproveDestination'])->name('cel.goedkeuren.intrekken');
-
         Route::get('/admin/gebruikers', [AdminController::class, 'users'])->name('admin.users');
         Route::get('/admin/gebruikers/nieuw', [RegisteredUserController::class, 'create'])->name('admin.users.create');
         Route::post('/admin/gebruikers/nieuw', [RegisteredUserController::class, 'store'])->name('admin.users.store');

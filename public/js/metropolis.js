@@ -448,31 +448,6 @@ document.addEventListener('click', function(e) {
         });
         return;
     }
-
-    // REV.3.1 — Bestemming goedkeuren (met bevestiging)
-    var approveBtn = e.target.closest('.btn-goedkeuren');
-    if (approveBtn) {
-        e.stopPropagation();
-        if (!confirm('Weet je zeker dat je deze bestemming wilt goedkeuren? Dit wordt vastgelegd met je naam en de datum.')) return;
-        var goedkeurCellId = approveBtn.dataset.cellId;
-        postJson('/cel/goedkeuren', { cell_id: goedkeurCellId }).then(function(data) {
-            if (data.success) location.reload();
-            else alert(data.message || 'Goedkeuren mislukt.');
-        });
-        return;
-    }
-
-    // Goedkeuring intrekken (met bevestiging)
-    var unapproveBtn = e.target.closest('.btn-goedkeuring-intrekken');
-    if (unapproveBtn) {
-        e.stopPropagation();
-        if (!confirm('Weet je zeker dat je de goedkeuring wilt intrekken?')) return;
-        var intrekCellId = unapproveBtn.dataset.cellId;
-        postJson('/cel/goedkeuren/intrekken', { cell_id: intrekCellId }).then(function(data) {
-            if (data.success) location.reload();
-        });
-        return;
-    }
 });
 
 restoreSelectionState();
