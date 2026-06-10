@@ -2706,3 +2706,42 @@ footer {
     color: #9ca3af;
     font-size: .82rem;
 }
+
+/* ===== SIM.12 — Route maker ===== */
+.route-maker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+    padding: .75rem 1rem;
+    background: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+}
+.route-knop, .route-wis-knop {
+    padding: .45rem .9rem;
+    border: none;
+    border-radius: 6px;
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.route-knop      { background: #2563eb; color: #fff; }
+.route-knop:hover { background: #1d4ed8; }
+.route-wis-knop  { background: #e5e7eb; color: #111827; }
+.route-wis-knop:hover { background: #d1d5db; }
+.route-info {
+    width: 100%;
+    margin: 0;
+    font-size: .85rem;
+    color: #374151;
+}
+
+.route-svg-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+}
+
+.cel.route-start { outline: 3px solid #16a34a; outline-offset: -3px; }
+.cel.route-eind  { outline: 3px solid #dc2626; outline-offset: -3px; }

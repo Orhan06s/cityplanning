@@ -33,8 +33,22 @@ function kondigAan(tekst) {
     }
 }
 
+// Bewaar scroll-positie zodat de pagina na reload niet naar boven springt
+window.addEventListener('DOMContentLoaded', function() {
+    var y = sessionStorage.getItem('metropolisScrollY');
+    if (y !== null) {
+        window.scrollTo(0, parseInt(y, 10) || 0);
+        sessionStorage.removeItem('metropolisScrollY');
+    }
+});
+// Onthoud scroll-positie bij elke form-submit (place/remove)
+document.addEventListener('submit', function() {
+    sessionStorage.setItem('metropolisScrollY', window.scrollY);
+}, true);
+
 // === Helper: maak een form en submit het (voor place/remove) ===
 function submitForm(action, velden) {
+    sessionStorage.setItem('metropolisScrollY', window.scrollY);
     var form = document.createElement('form');
     form.method = 'POST';
     form.action = action;
@@ -781,3 +795,92 @@ function setupAddFunctionModal() {
         });
     });
 }
+
+// ===== SIM.12 — Route tussen twee bestemmingen =====
+(function() {
+    var startBtn = document.getElementById('route-start-btn');
+    var wisBtn   = document.getElementById('route-wis-btn');
+    var info     = document.getElementById('route-info');
+    var grid     = document.querySelector('.grid');
+    if (!startBtn || !grid) return;
+
+    var modus = false;
+    var startCel = null;
+    var eindCel  = null;
+    var svg      = null;
+
+    function zetInfo(t) { if (info) info.textContent = t; }
+
+    function wisRoute() {
+        if (startCel) startCel.classList.remove('route-start');
+        if (eindCel)  eindCel.classList.remove('route-eind');
+        startCel = null; eindCel = null;
+        if (svg) { svg.remove(); svg = null; }
+        wisBtn.hidden = true;
+        modus = false;
+        startBtn.textContent = 'Kies route';
+        zetInfo('');
+    }
+
+    function tekenLijn() {
+        if (!startCel || !eindCel) return;
+        var g = grid.getBoundingClientRect();
+        var a = startCel.getBoundingClientRect();
+        var b = eindCel.getBoundingClientRect();
+        var x1 = a.left - g.left + a.width / 2;
+        var y1 = a.top  - g.top  + a.height / 2;
+        var x2 = b.left - g.left + b.width / 2;
+        var y2 = b.top  - g.top  + b.height / 2;
+        if (!svg) {
+            svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'route-svg-overlay');
+            svg.setAttribute('aria-hidden', 'true');
+            if (getComputedStyle(grid).position === 'static') grid.style.position = 'relative';
+            grid.appendChild(svg);
+        }
+        svg.setAttribute('width',  g.width);
+        svg.setAttribute('height', g.height);
+        // L-vorm: eerst horizontaal, dan verticaal (geen schuine lijn)
+        var path = 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y1 + ' L ' + x2 + ' ' + y2;
+        svg.innerHTML =
+            '<path d="'+path+'" fill="none" stroke="#2563eb" stroke-width="5" ' +
+            'stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10 6"/>' +
+            '<circle cx="'+x1+'" cy="'+y1+'" r="9" fill="#16a34a"/>' +
+            '<circle cx="'+x2+'" cy="'+y2+'" r="9" fill="#dc2626"/>';
+    }
+
+    startBtn.addEventListener('click', function() {
+        if (modus) { wisRoute(); return; }
+        wisRoute();
+        modus = true;
+        startBtn.textContent = 'Annuleer';
+        zetInfo('Klik op een bestemming als startpunt.');
+    });
+
+    wisBtn.addEventListener('click', wisRoute);
+
+    grid.addEventListener('click', function(e) {
+        if (!modus) return;
+        var cel = e.target.closest('.cel.is-bestemming');
+        if (!cel) return;
+        e.preventDefault();
+        e.stopPropagation();
+        if (!startCel) {
+            startCel = cel;
+            cel.classList.add('route-start');
+            zetInfo('Klik nu op de eindbestemming.');
+        } else if (cel === startCel) {
+            return;
+        } else {
+            eindCel = cel;
+            cel.classList.add('route-eind');
+            tekenLijn();
+            modus = false;
+            startBtn.textContent = 'Nieuwe route';
+            wisBtn.hidden = false;
+            zetInfo('Route weergegeven tussen de twee bestemmingen.');
+        }
+    }, true);
+
+    window.addEventListener('resize', function() { if (svg) tekenLijn(); });
+})();
