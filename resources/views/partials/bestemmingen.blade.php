@@ -27,11 +27,6 @@
                             <div class="bestemmingen-item-tekst">
                                 <span class="bestemmingen-item-naam">{{ $cel->destination->getNaam() }}</span>
                                 <span class="bestemmingen-item-cat bestemmingen-cat-{{ $cel->destination->category }}">{{ __($cel->destination->category) }}</span>
-                                @if($cel->isApproved())
-                                    <span class="bestemmingen-item-goedgekeurd" title="{{ __('Goedgekeurd door') }} {{ $cel->approver?->name ?? __('onbekend') }} {{ __('op') }} {{ $cel->approved_at?->format('d-m-Y H:i') }}">
-                                        ✓ {{ __('Goedgekeurd') }}
-                                    </span>
-                                @endif
                             </div>
                         @else
                             <span class="bestemmingen-item-icon" aria-hidden="true">📍</span>
