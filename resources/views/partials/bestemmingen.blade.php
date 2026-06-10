@@ -5,6 +5,15 @@
         <span class="bestemmingen-count" aria-live="polite">{{ $bestemmingen->count() }}</span>
     </div>
 
+    {{-- Route maker --}}
+    @if(!$bestemmingen->isEmpty())
+        <div class="route-maker">
+            <button id="route-start-btn" type="button" class="route-knop">{{ __('Kies route') }}</button>
+            <button id="route-wis-btn" type="button" class="route-wis-knop" hidden>{{ __('Wis route') }}</button>
+            <p class="route-info" id="route-info" aria-live="polite"></p>
+        </div>
+    @endif
+
     @if($bestemmingen->isEmpty())
         <div class="bestemmingen-leeg-staat">
             <span class="bestemmingen-leeg-icoon" aria-hidden="true">📍</span>
