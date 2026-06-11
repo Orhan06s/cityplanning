@@ -25,6 +25,10 @@
                     {{ __('Stadsgebied') }}
                 </a>
                 @auth
+                    <a href="{{ route('events.index') }}"
+                       class="nav-link {{ request()->routeIs('events.index') ? 'is-actief' : '' }}">
+                        {{ __('Evenementen') }}
+                    </a>
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('effects.manager') }}"
                            class="nav-link {{ request()->routeIs('effects.manager') ? 'is-actief' : '' }}">
@@ -39,6 +43,10 @@
                         <a href="{{ route('beleidsmaker.dashboard') }}"
                            class="nav-link {{ request()->routeIs('beleidsmaker.dashboard') ? 'is-actief' : '' }}">
                             {{ __('Dashboard') }}
+                        </a>
+                        <a href="{{ route('beleidsmaker.feedback') }}"
+                           class="nav-link {{ request()->routeIs('beleidsmaker.feedback*') ? 'is-actief' : '' }}">
+                            {{ __('Feedback geven') }}
                         </a>
                     @endif
                 @endauth

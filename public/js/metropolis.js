@@ -942,3 +942,114 @@ document.querySelectorAll('.melding').forEach(function(m) {
     x.addEventListener('click', sluit);
     setTimeout(sluit, 4000);
 });
+
+
+// ===== Evenementen pagina: modal openen, evenement opslaan, verwijderen, alles wissen =====
+(function() {
+    var openBtn   = document.getElementById('add-event-btn');
+    var modal     = document.getElementById('add-event-modal');
+    var sluitBtn  = document.getElementById('add-event-modal-sluit');
+    var annBtn    = document.getElementById('add-event-annuleer');
+    var form      = document.getElementById('add-event-form');
+    var foutBox   = document.getElementById('add-event-fout');
+    var clearBtn  = document.getElementById('clear-events-btn');
+    var tbody     = document.getElementById('events-tbody');
+
+    function openModal() {
+        if (!modal) return;
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        modal.classList.add('is-open');
+        if (foutBox) { foutBox.hidden = true; foutBox.textContent = ''; }
+        var d = new Date().toISOString().slice(0, 10);
+        var sd = document.getElementById('ae-start-date');
+        var ed = document.getElementById('ae-end-date');
+        if (sd && !sd.value) sd.value = d;
+        if (ed && !ed.value) ed.value = d;
+    }
+    function sluitModal() {
+        if (!modal) return;
+        modal.hidden = true;
+        modal.setAttribute('aria-hidden', 'true');
+        modal.classList.remove('is-open');
+    }
+
+    if (openBtn)  openBtn.addEventListener('click', openModal);
+    if (sluitBtn) sluitBtn.addEventListener('click', sluitModal);
+
+    // Toon/verberg eigen-evenement velden afhankelijk van type-keuze
+    var typeSel = document.getElementById('ae-type');
+    var customWrap = document.getElementById('ae-custom-velden');
+    var customLabel = document.getElementById('ae-custom-label');
+    function toggleCustom() {
+        if (!typeSel || !customWrap) return;
+        var isCustom = typeSel.value === 'custom';
+        customWrap.hidden = !isCustom;
+        if (customLabel) customLabel.required = isCustom;
+    }
+    if (typeSel) typeSel.addEventListener('change', toggleCustom);
+    toggleCustom();
+    if (annBtn)   annBtn.addEventListener('click', sluitModal);
+    if (modal)    modal.addEventListener('click', function(e) { if (e.target === modal) sluitModal(); });
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (foutBox) { foutBox.hidden = true; foutBox.textContent = ''; }
+
+            var data = new FormData(form);
+            fetch('/events', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrf(), 'Accept': 'application/json' },
+                body: data
+            })
+            .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+            .then(function(res) {
+                if (res.ok && res.data.success) {
+                    location.reload();
+                    return;
+                }
+                var msg = 'Fout bij toevoegen.';
+                if (res.data && res.data.errors) {
+                    var first = Object.values(res.data.errors)[0];
+                    if (Array.isArray(first) && first.length) msg = first[0];
+                } else if (res.data && res.data.message) {
+                    msg = res.data.message;
+                }
+                if (foutBox) { foutBox.textContent = msg; foutBox.hidden = false; }
+            })
+            .catch(function() {
+                if (foutBox) { foutBox.textContent = 'Netwerkfout. Probeer opnieuw.'; foutBox.hidden = false; }
+            });
+        });
+    }
+
+    // Verwijder één evenement
+    if (tbody) {
+        tbody.addEventListener('click', function(e) {
+            var btn = e.target.closest('.remove-event-btn');
+            if (!btn) return;
+            if (!confirm('Dit evenement verwijderen?')) return;
+            var id = btn.getAttribute('data-event-id');
+            fetch('/events/' + id, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': csrf(), 'Accept': 'application/json' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(d) { if (d.success) location.reload(); });
+        });
+    }
+
+    // Alles wissen
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            if (!confirm('Alle evenementen wissen?')) return;
+            fetch('/events/clear', {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrf(), 'Accept': 'application/json' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(d) { if (d.success) location.reload(); });
+        });
+    }
+})();

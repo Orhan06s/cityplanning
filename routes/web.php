@@ -5,6 +5,8 @@ use App\Http\Controllers\MetropolisController;
 use App\Http\Controllers\EffectsController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PolicyMakerController;
+use App\Http\Controllers\SimulationEventController;
+use App\Http\Controllers\GridFeedbackController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 
@@ -20,6 +22,8 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name
 Route::middleware('auth')->group(function () {
 
     Route::get('/', [MetropolisController::class, 'index'])->name('home');
+
+    Route::get('/evenementen', [SimulationEventController::class, 'index'])->name('events.index');
 
     Route::get('/taal/{lang}', function ($lang) {
         if (in_array($lang, ['nl', 'en'])) {
@@ -37,6 +41,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/grid/clear', [MetropolisController::class, 'clearGrid'])->name('grid.clear');
         Route::post('/cel/bestemming', [MetropolisController::class, 'markDestination'])->name('cel.bestemming');
         Route::post('/cel/bestemming/verwijder', [MetropolisController::class, 'unmarkDestination'])->name('cel.bestemming.verwijder');
+
+        // Simulatie-evenementen
+        Route::post('/events', [SimulationEventController::class, 'store'])->name('events.store');
+        Route::delete('/events/{event}', [SimulationEventController::class, 'destroy'])->name('events.destroy');
+        Route::post('/events/clear', [SimulationEventController::class, 'clear'])->name('events.clear');
     });
 
     // Admin-only — effecten beheren + gebruikersbeheer
@@ -58,9 +67,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/export-pdf', [MetropolisController::class, 'exportPdf'])->name('export.pdf');
     });
 
-    // Beleidsmaker eigen dashboard
+    // Beleidsmaker eigen dashboard + feedback
     Route::middleware('role:beleidsmaker')->group(function () {
         Route::get('/beleidsmaker/dashboard', [PolicyMakerController::class, 'index'])->name('beleidsmaker.dashboard');
+
+        Route::get('/beleidsmaker/feedback', [GridFeedbackController::class, 'index'])->name('beleidsmaker.feedback');
+        Route::post('/beleidsmaker/feedback', [GridFeedbackController::class, 'store'])->name('beleidsmaker.feedback.store');
+        Route::delete('/beleidsmaker/feedback/{feedback}', [GridFeedbackController::class, 'destroy'])->name('beleidsmaker.feedback.destroy');
+        Route::post('/beleidsmaker/feedback/submit', [GridFeedbackController::class, 'submit'])->name('beleidsmaker.feedback.submit');
     });
 
     // Goedkeuren bestemmingen: beleidsmaker en admin
