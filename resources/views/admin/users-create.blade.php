@@ -4,7 +4,7 @@
 <div class="gebruikers-pagina">
     <div class="gebruikers-header">
         <h2>{{ __('Nieuwe gebruiker aanmaken') }}</h2>
-        <a href="{{ route('admin.users') }}" class="btn-blauw">← {{ __('Terug') }}</a>
+        <a href="{{ route('admin.users') }}" class="btn-blauw">{{ __('Terug') }}</a>
     </div>
 
     <form method="POST" action="{{ route('admin.users.store') }}" class="auth-form" style="max-width:480px;">
@@ -25,9 +25,10 @@
         <div class="form-group">
             <label for="role">{{ __('Rol') }}</label>
             <select id="role" name="role" required>
-                <option value="admin"     {{ old('role') === 'admin'     ? 'selected' : '' }}>{{ __('Admin (volledig beheer)') }}</option>
-                <option value="gebruiker" {{ old('role') === 'gebruiker' ? 'selected' : '' }}>{{ __('Gebruiker (grid bewerken)') }}</option>
-                <option value="viewer"    {{ old('role') === 'viewer'    ? 'selected' : '' }}>{{ __('Viewer (alleen bekijken)') }}</option>
+                <option value="admin"        {{ old('role') === 'admin'        ? 'selected' : '' }}>{{ __('Admin (volledig beheer)') }}</option>
+                <option value="gebruiker"    {{ old('role') === 'gebruiker'    ? 'selected' : '' }}>{{ __('Gebruiker (grid bewerken)') }}</option>
+                <option value="beleidsmaker" {{ old('role') === 'beleidsmaker' ? 'selected' : '' }}>{{ __('Beleidsmaker (bestemmingen goedkeuren)') }}</option>
+                <option value="viewer"       {{ old('role') === 'viewer'       ? 'selected' : '' }}>{{ __('Viewer (alleen bekijken)') }}</option>
             </select>
             @error('role') <div class="form-error">{{ $message }}</div> @enderror
         </div>

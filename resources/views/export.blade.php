@@ -77,6 +77,19 @@
             border-color: #2d4a22;
             background: #e8f5e9;
         }
+        .cel.is-goedgekeurd {
+            border-color: #15803d;
+            box-shadow: inset 0 0 0 2px #15803d;
+        }
+        .cel-check {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            color: #15803d;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .cel { position: relative; }
         .cel-icon {
             font-size: 1.6rem;
             display: block;
@@ -141,7 +154,10 @@
     <h2>{{ __('Stadsgebied') }} ({{ count($gridCells) }} {{ __('cellen') }})</h2>
     <div class="grid">
         @foreach($gridCells as $cell)
-            <div class="cel {{ $cell->destination ? 'bezet' : '' }}">
+            <div class="cel {{ $cell->destination ? 'bezet' : '' }} {{ $cell->isApproved() ? 'is-goedgekeurd' : '' }}">
+                @if($cell->isApproved())
+                    <span class="cel-check" title="{{ __('Goedgekeurd') }}">✓</span>
+                @endif
                 @if($cell->destination)
                     @if(str_starts_with($cell->destination->icon, '/'))
                         <img src="{{ public_path() . $cell->destination->icon }}" alt="" style="height:1.6rem;">

@@ -58,8 +58,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/export-pdf', [MetropolisController::class, 'exportPdf'])->name('export.pdf');
     });
 
-    // Beleidsmaker — eigen dashboard
+    // Beleidsmaker eigen dashboard
     Route::middleware('role:beleidsmaker')->group(function () {
         Route::get('/beleidsmaker/dashboard', [PolicyMakerController::class, 'index'])->name('beleidsmaker.dashboard');
+    });
+
+    // Goedkeuren bestemmingen: beleidsmaker en admin
+    Route::middleware('role:beleidsmaker,admin')->group(function () {
+        Route::post('/cel/goedkeuren', [MetropolisController::class, 'approveDestination'])->name('cel.goedkeuren');
+        Route::post('/cel/goedkeuren/intrekken', [MetropolisController::class, 'unapproveDestination'])->name('cel.goedkeuren.intrekken');
     });
 });

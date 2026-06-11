@@ -233,6 +233,11 @@ document.querySelectorAll('.cel').forEach(function(cel) {
                 resetGroupSelection();
                 return;
             }
+            // Koppelen is alleen voor admin/gebruiker; anderen wisselen gewoon selectie
+            if (!window.metroCanEdit) {
+                selectGroupCell(cel);
+                return;
+            }
             postJson('/group/link', {
                 source_cell_id: selectedGroupCellId,
                 target_cell_id: cel.dataset.cellId
@@ -456,6 +461,31 @@ document.addEventListener('click', function(e) {
         e.stopPropagation();
         var cellId = markBtn.dataset.cellId;
         postJson('/cel/bestemming', { cell_id: cellId }).then(function(data) {
+            if (data.success) location.reload();
+        });
+        return;
+    }
+
+    // Goedkeuren (alleen beleidsmaker)
+    var approveBtn = e.target.closest('.btn-goedkeuren');
+    if (approveBtn) {
+        e.stopPropagation();
+        if (!confirm('Weet je zeker dat je deze bestemming wilt goedkeuren? Dit wordt vastgelegd met je naam en datum.')) return;
+        var goedkeurId = approveBtn.dataset.cellId;
+        postJson('/cel/goedkeuren', { cell_id: goedkeurId }).then(function(data) {
+            if (data.success) location.reload();
+            else alert(data.message || 'Goedkeuren mislukt.');
+        });
+        return;
+    }
+
+    // Goedkeuring intrekken
+    var unapproveBtn = e.target.closest('.btn-goedkeuring-intrekken');
+    if (unapproveBtn) {
+        e.stopPropagation();
+        if (!confirm('Weet je zeker dat je de goedkeuring wilt intrekken?')) return;
+        var intrekId = unapproveBtn.dataset.cellId;
+        postJson('/cel/goedkeuren/intrekken', { cell_id: intrekId }).then(function(data) {
             if (data.success) location.reload();
         });
         return;
@@ -895,18 +925,20 @@ function setupAddFunctionModal() {
 })();
 
 
-// Meldingen automatisch laten verdwijnen na 4 seconden, of klik om weg
+// Meldingen automatisch laten verdwijnen na 4 seconden, of klik X om eerder weg
 document.querySelectorAll('.melding').forEach(function(m) {
-    m.style.cursor = 'pointer';
-    m.title = 'Klik om te sluiten';
-    m.addEventListener('click', function() {
+    var x = document.createElement('button');
+    x.type = 'button';
+    x.className = 'melding-sluit';
+    x.setAttribute('aria-label', 'Sluiten');
+    x.textContent = '✕';
+    m.appendChild(x);
+
+    function sluit() {
         m.style.transition = 'opacity 0.3s';
         m.style.opacity = '0';
         setTimeout(function() { m.remove(); }, 300);
-    });
-    setTimeout(function() {
-        m.style.transition = 'opacity 0.5s';
-        m.style.opacity = '0';
-        setTimeout(function() { m.remove(); }, 500);
-    }, 4000);
+    }
+    x.addEventListener('click', sluit);
+    setTimeout(sluit, 4000);
 });

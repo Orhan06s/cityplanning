@@ -16,7 +16,7 @@
             $row = intdiv($cell->position, $COLUMNS) + 1;
             $col = ($cell->position % $COLUMNS) + 1;
         @endphp
-        <div class="cel {{ $cell->destination ? 'bezet' : 'leeg' }} {{ $cell->linked_group_id ? 'linked' : '' }} {{ $cell->is_destination ? 'is-bestemming' : '' }}"
+        <div class="cel {{ $cell->destination ? 'bezet' : 'leeg' }} {{ $cell->linked_group_id ? 'linked' : '' }} {{ $cell->is_destination ? 'is-bestemming' : '' }} {{ $cell->isApproved() ? 'is-goedgekeurd' : '' }}"
              role="gridcell"
              tabindex="0"
              data-cell-id="{{ $cell->id }}"
@@ -47,32 +47,74 @@
                     <span class="cel-bestemming-badge" aria-label="{{ __('bestemming') }}" title="{{ __('Ingesteld als bestemming') }}">📍</span>
                 @endif
 
-                {{-- Bestemmingsknop: zichtbaar als de cel geselecteerd is --}}
+                @if($cell->isApproved())
+                    <span class="cel-goedgekeurd-badge"
+                          aria-label="{{ __('Goedgekeurd') }}"
+                          title="{{ __('Goedgekeurd door') }} {{ $cell->approver?->name ?? __('onbekend') }} {{ __('op') }} {{ $cell->approved_at?->format('d-m-Y H:i') }}">✓</span>
+                @endif
+
+                {{-- Acties: zichtbaar als de cel geselecteerd is --}}
                 <div class="cel-acties" aria-hidden="true">
-                    @if(!$cell->is_destination)
-                        <button class="btn-stel-bestemming"
-                                data-cell-id="{{ $cell->id }}"
-                                type="button"
-                                aria-label="{{ __('Stel in als bestemming') }}">
-                            📍 {{ __('Bestemming') }}
-                        </button>
-                    @else
-                        <button class="btn-verwijder-bestemming"
-                                data-cell-id="{{ $cell->id }}"
-                                type="button"
-                                aria-label="{{ __('Verwijder als bestemming') }}">
-                            ✕ {{ __('Bestemming') }}
-                        </button>
+                    @auth
+                        @if(auth()->user()->canEdit())
+                            @if(!$cell->is_destination)
+                                <button class="btn-stel-bestemming"
+                                        data-cell-id="{{ $cell->id }}"
+                                        type="button"
+                                        aria-label="{{ __('Stel in als bestemming') }}">
+                                    📍 {{ __('Bestemming') }}
+                                </button>
+                            @else
+                                <button class="btn-verwijder-bestemming"
+                                        data-cell-id="{{ $cell->id }}"
+                                        type="button"
+                                        aria-label="{{ __('Verwijder als bestemming') }}">
+                                    ✕ {{ __('Bestemming') }}
+                                </button>
+                            @endif
+                        @endif
+                    @endauth
+
+                    {{-- Goedkeuren: voor beleidsmaker + admin, alleen bij cel met functie --}}
+                    @auth
+                        @if(auth()->user()->isBeleidsmaker() || auth()->user()->isAdmin())
+                            @if(!$cell->isApproved())
+                                <button class="btn-goedkeuren"
+                                        data-cell-id="{{ $cell->id }}"
+                                        type="button"
+                                        aria-label="{{ __('Keur deze bestemming goed') }}">
+                                    ✓ {{ __('Goedkeuren') }}
+                                </button>
+                            @else
+                                <button class="btn-goedkeuring-intrekken"
+                                        data-cell-id="{{ $cell->id }}"
+                                        type="button"
+                                        aria-label="{{ __('Goedkeuring intrekken') }}">
+                                    ✕ {{ __('Intrekken') }}
+                                </button>
+                            @endif
+                        @endif
+                    @endauth
+
+                    @if($cell->isApproved())
+                        <span class="cel-goedkeur-status" role="status">
+                            ✓ {{ __('Goedgekeurd door') }} <strong>{{ $cell->approver?->name ?? __('onbekend') }}</strong>
+                            {{ __('op') }} {{ $cell->approved_at?->format('d-m-Y H:i') }}
+                        </span>
                     @endif
                 </div>
 
-                <form action="{{ route('remove') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="cell_id" value="{{ $cell->id }}">
-                    <input type="hidden" name="size" value="{{ $gridSize }}">
-                    <button type="submit" class="verwijder-btn"
-                            aria-label="{{ __('Verwijder') }} {{ $cell->destination->getNaam() }}">✕</button>
-                </form>
+                @auth
+                    @if(auth()->user()->canEdit())
+                        <form action="{{ route('remove') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="cell_id" value="{{ $cell->id }}">
+                            <input type="hidden" name="size" value="{{ $gridSize }}">
+                            <button type="submit" class="verwijder-btn"
+                                    aria-label="{{ __('Verwijder') }} {{ $cell->destination->getNaam() }}">✕</button>
+                        </form>
+                    @endif
+                @endauth
             @else
                 <span class="leeg-tekst" aria-hidden="true">{{ __('Sleep hier') }}</span>
             @endif

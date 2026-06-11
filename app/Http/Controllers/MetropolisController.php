@@ -25,13 +25,13 @@ class MetropolisController extends Controller
         $destinationsByCategory = Destination::all()->groupBy('category');
 
         // Alleen de eerste N cellen tonen
-        $gridCells = GridCell::with('destination')
+        $gridCells = GridCell::with('destination', 'approver')
             ->orderBy('position')
             ->take($size)
             ->get();
 
         // Cellen die als bestemming zijn gemarkeerd (ook zonder functie)
-        $bestemmingen = GridCell::with('destination')
+        $bestemmingen = GridCell::with('destination', 'approver')
             ->where('is_destination', true)
             ->orderBy('position')
             ->get();
@@ -127,11 +127,13 @@ class MetropolisController extends Controller
         $cell = GridCell::find($request->cell_id);
 
         if ($cell->linked_group_id) {
-            // Verwijder de hele gekoppelde groep in één keer
+            // Verwijder de hele gekoppelde groep, ook approval
             GridCell::where('linked_group_id', $cell->linked_group_id)
-                ->update(['destination_id' => null, 'linked_group_id' => null]);
+                ->update(['destination_id' => null, 'linked_group_id' => null, 'approved_at' => null, 'approved_by' => null]);
         } else {
             $cell->destination_id = null;
+            $cell->approved_at = null;
+            $cell->approved_by = null;
             $cell->save();
         }
 
@@ -305,6 +307,40 @@ class MetropolisController extends Controller
     {
         $request->validate(['cell_id' => 'required|integer|exists:grid_cells,id']);
         GridCell::where('id', $request->cell_id)->update(['is_destination' => false]);
+        return response()->json(['success' => true]);
+    }
+
+    // Beleidsmaker keurt de bestemming op een cel goed
+    public function approveDestination(Request $request)
+    {
+        $request->validate(['cell_id' => 'required|integer|exists:grid_cells,id']);
+
+        $cell = GridCell::find($request->cell_id);
+
+        if (!$cell->destination_id) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Deze cel heeft geen functie om goed te keuren.'),
+            ], 422);
+        }
+
+        $cell->approved_at = now();
+        $cell->approved_by = auth()->id();
+        $cell->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    // Beleidsmaker trekt goedkeuring weer in
+    public function unapproveDestination(Request $request)
+    {
+        $request->validate(['cell_id' => 'required|integer|exists:grid_cells,id']);
+
+        $cell = GridCell::find($request->cell_id);
+        $cell->approved_at = null;
+        $cell->approved_by = null;
+        $cell->save();
+
         return response()->json(['success' => true]);
     }
 

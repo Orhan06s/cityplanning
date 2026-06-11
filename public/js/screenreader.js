@@ -56,11 +56,13 @@
         knop.setAttribute('aria-pressed', String(actief));
         knop.classList.toggle('is-actief', actief);
         knop.setAttribute('aria-label', actief
-            ? 'Screenreader uitschakelen'
-            : 'Screenreader inschakelen'
+            ? (knop.dataset.aanAria || 'Screenreader uitschakelen')
+            : (knop.dataset.uitAria || 'Screenreader inschakelen')
         );
         var label = knop.querySelector('.sr-knop-label');
-        if (label) label.textContent = actief ? 'Voorlezen aan' : 'Voorlezen';
+        if (label) label.textContent = actief
+            ? (knop.dataset.aanLabel || 'Voorlezen aan')
+            : (knop.dataset.uitLabel || 'Voorlezen');
     }
 
     function toggle() {

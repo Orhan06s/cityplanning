@@ -27,13 +27,13 @@
                         <td class="gebruiker-naam">
                             {{ $user->name }}
                             @if($user->id === auth()->id())
-                                <span class="gebruiker-jij">(jij)</span>
+                                <span class="gebruiker-jij">({{ __('jij') }})</span>
                             @endif
                         </td>
                         <td class="gebruiker-email">{{ $user->email }}</td>
                         <td>
                             <span class="rol-badge {{ $user->role }}">
-                                {{ ucfirst($user->role) }}
+                                {{ ucfirst(__($user->role)) }}
                             </span>
                         </td>
                         <td>
@@ -62,9 +62,10 @@
     </div>
 
     <p class="gebruikers-legenda">
-        💡 <strong>Admin</strong>: {{ __('volledig beheer') }} &nbsp;|&nbsp;
-        <strong>Gebruiker</strong>: {{ __('grid bewerken') }} &nbsp;|&nbsp;
-        <strong>Viewer</strong>: {{ __('alleen bekijken') }}
+        <strong>{{ __('Admin') }}</strong>: {{ __('volledig beheer') }} &nbsp;|&nbsp;
+        <strong>{{ __('Gebruiker') }}</strong>: {{ __('grid bewerken') }} &nbsp;|&nbsp;
+        <strong>{{ __('Viewer') }}</strong>: {{ __('alleen bekijken') }} &nbsp;|&nbsp;
+        <strong>{{ __('Beleidsmaker') }}</strong>: {{ __('bestemmingen goedkeuren') }}
     </p>
 </div>
 @endsection

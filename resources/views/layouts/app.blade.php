@@ -46,7 +46,13 @@
 
             <div class="header-rechts">
                 {{-- Screenreader knop --}}
-                <button id="sr-knop" class="sr-toggle-btn" aria-pressed="false" aria-label="{{ __('Screenreader inschakelen') }}" type="button">
+                <button id="sr-knop" class="sr-toggle-btn" aria-pressed="false"
+                        aria-label="{{ __('Screenreader inschakelen') }}"
+                        data-aan-label="{{ __('Voorlezen aan') }}"
+                        data-uit-label="{{ __('Voorlezen') }}"
+                        data-aan-aria="{{ __('Screenreader uitschakelen') }}"
+                        data-uit-aria="{{ __('Screenreader inschakelen') }}"
+                        type="button">
                     <span aria-hidden="true">👁</span>
                     <span class="sr-knop-label">{{ __('Voorlezen') }}</span>
                 </button>
@@ -62,7 +68,7 @@
                 @auth
                     <div class="user-info">
                         <span class="user-naam">{{ auth()->user()->name }}</span>
-                        <span class="user-badge {{ auth()->user()->role }}">{{ auth()->user()->role }}</span>
+                        <span class="user-badge {{ auth()->user()->role }}">{{ __(auth()->user()->role) }}</span>
                         <form method="POST" action="{{ route('logout') }}" class="logout-form">
                             @csrf
                             <button type="submit" class="btn-logout">{{ __('Uitloggen') }}</button>
