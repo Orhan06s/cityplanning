@@ -27,6 +27,12 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
 
+        $user = Auth::user();
+
+        if ($user->isBeleidsmaker()) {
+            return redirect()->route('beleidsmaker.dashboard');
+        }
+
         return redirect()->intended(route('home'));
     }
 
