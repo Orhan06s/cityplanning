@@ -40,7 +40,7 @@
                 @if(auth()->user()->canEdit())
                     <button id="clear-grid-btn" class="btn btn-small" style="margin-left:12px">{{ __('Leeg grid') }}</button>
                 @endif
-                @if(in_array(auth()->user()->role, ['admin', 'beleidsmaker']))
+                @if(in_array(auth()->user()->role, ['gebruiker', 'admin']))
                     <a href="{{ route('export.pdf') }}" target="_blank" rel="noopener" class="btn btn-small" style="margin-left:8px; text-decoration:none; display:inline-block;">
                         <span aria-hidden="true">📄</span> {{ __('Exporteer PDF') }}
                     </a>

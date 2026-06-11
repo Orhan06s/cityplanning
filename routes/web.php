@@ -53,9 +53,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/gebruikers/{user}/verwijderen', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
     });
 
-    // Beleidsmaker — eigen dashboard + PDF export
-    Route::middleware('role:beleidsmaker,admin')->group(function () {
-        Route::get('/beleidsmaker/dashboard', [PolicyMakerController::class, 'index'])->name('beleidsmaker.dashboard');
+    // PDF export voor city planner en admin
+    Route::middleware('role:gebruiker,admin')->group(function () {
         Route::get('/export-pdf', [MetropolisController::class, 'exportPdf'])->name('export.pdf');
+    });
+
+    // Beleidsmaker — eigen dashboard
+    Route::middleware('role:beleidsmaker')->group(function () {
+        Route::get('/beleidsmaker/dashboard', [PolicyMakerController::class, 'index'])->name('beleidsmaker.dashboard');
     });
 });
