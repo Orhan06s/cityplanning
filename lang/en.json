@@ -4,7 +4,13 @@
     "Hoofdnavigatie": "Main navigation",
     "Bestemmingen": "Destinations",
     "Bestemmingen in de stad": "Destinations in the city",
-    "Nog geen bestemmingen. Selecteer een functie op het grid om hem in te stellen.": "No destinations yet. Select a function on the grid to mark it.",
+    "Nog geen bestemmingen.": "No destinations yet.",
+    "Klik op een functie om hem als bestemming te kiezen.": "Click a function to make it a destination.",
+    "Lege plek": "Empty spot",
+    "Kies route": "Pick route",
+    "Wis route": "Clear route",
+    "Functies & Effecten": "Functions & Effects",
+    "Engelse naam": "English name",
     "Stel in als bestemming": "Set as destination",
     "Verwijder als bestemming": "Remove as destination",
     "Ingesteld als bestemming": "Set as destination",
@@ -128,6 +134,6 @@
     "Icoon": "Icon",
     "Voorbeeld": "Preview",
     "Kies een icoon": "Choose an icon",
-    "Of upload je eigen icoon (PNG, JPG, SVG — max 2MB)": "Or upload your own icon (PNG, JPG, SVG — max 2MB)",
+    "Of upload je eigen icoon (PNG, JPG, SVG, max 2MB)": "Or upload your own icon (PNG, JPG, SVG, max 2MB)",
     "Effect-punten per categorie": "Effect points per category"
 }

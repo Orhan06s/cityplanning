@@ -1,8 +1,7 @@
 <?php
 
 // Tabel van effect-punten per functie, per categorie.
-// Komt 1-op-1 uit de matrix in EFF.1.1.
-// Categorienamen staan met kleine letters zodat ze matchen met destinations.category.
+// Categorienamen zijn lowercase zodat ze matchen met destinations.category.
 
 return [
 

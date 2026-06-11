@@ -18,7 +18,7 @@
         <div class="bestemmingen-leeg-staat">
             <span class="bestemmingen-leeg-icoon" aria-hidden="true">📍</span>
             <p>{{ __('Nog geen bestemmingen.') }}</p>
-            <p class="bestemmingen-leeg-hint">{{ __('Klik op een functie in het grid om hem te selecteren, dan kun je hem als bestemming instellen.') }}</p>
+            <p class="bestemmingen-leeg-hint">{{ __('Klik op een functie om hem als bestemming te kiezen.') }}</p>
         </div>
     @else
         <ul class="bestemmingen-lijst" role="list">

@@ -12,10 +12,15 @@ class MetropolisController extends Controller
 {
     public function index(Request $request)
     {
-        // Grid size uit query string (?size=N), default 12, clamp 6-64
-        $size = (int) $request->query('size', 12);
-        if ($size < 6)  $size = 6;
-        if ($size > 64) $size = 64;
+        // Grid size: uit URL als die er is, anders uit session, anders 12. Clamp 6-64.
+        if ($request->has('size')) {
+            $size = (int) $request->query('size', 12);
+            if ($size < 6)  $size = 6;
+            if ($size > 64) $size = 64;
+            session(['grid_size' => $size]);
+        } else {
+            $size = (int) session('grid_size', 12);
+        }
 
         $destinationsByCategory = Destination::all()->groupBy('category');
 
@@ -58,9 +63,9 @@ class MetropolisController extends Controller
 
         $cell        = GridCell::find($request->cell_id);
         $destination = Destination::find($request->destination_id);
-        $size        = $request->input('size', 12);
+        $size        = (int) $request->input('size', session('grid_size', 12));
 
-        // Check verboden buren (BES.3.2)
+        // Check verboden buren
         $conflict = $this->findForbiddenNeighbor($cell, $destination->name);
         if ($conflict) {
             return redirect('/?size=' . $size)->with('error',
@@ -130,7 +135,7 @@ class MetropolisController extends Controller
             $cell->save();
         }
 
-        $size = $request->input('size', 12);
+        $size = (int) $request->input('size', session('grid_size', 12));
         return redirect('/?size=' . $size)->with('success', __('Functie verwijderd!'));
     }
 

@@ -22,7 +22,7 @@ class EffectsCalculator
                     return;
                 }
             } catch (\Exception $e) {
-                // Database niet beschikbaar — val terug op config
+                // Database niet beschikbaar, val terug op config
             }
 
             $matrix = [
@@ -112,7 +112,7 @@ class EffectsCalculator
             }
         }
 
-        // Bonus-punten voor functies die naast elkaar staan (BES.3.3)
+        // Bonus-punten voor functies die naast elkaar staan
         $this->applyAdjacencyBonuses($gridCells, $totals);
 
         return $totals;
@@ -143,7 +143,7 @@ class EffectsCalculator
             }
         }
 
-        // Per cel naar rechts/onder kijken — zo telt elk paar maar 1x
+        // Per cel naar rechts en onder kijken, zo telt elk paar maar 1x
         foreach ($byPos as $pos => $name) {
             $col = $pos % $cols;
             $neighbors = [$pos + $cols]; // onder

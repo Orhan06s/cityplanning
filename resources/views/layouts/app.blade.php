@@ -28,7 +28,7 @@
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('effects.manager') }}"
                            class="nav-link {{ request()->routeIs('effects.manager') ? 'is-actief' : '' }}">
-                            {{ __('Effecten beheren') }}
+                            {{ __('Functies & Effecten') }}
                         </a>
                         <a href="{{ route('admin.users') }}"
                            class="nav-link {{ request()->routeIs('admin.users*') ? 'is-actief' : '' }}">

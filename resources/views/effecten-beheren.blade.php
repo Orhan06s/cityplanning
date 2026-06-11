@@ -145,6 +145,18 @@
             </div>
 
             <div class="form-veld">
+                <label for="af-name-en">{{ __('Engelse naam') }}</label>
+                <input
+                    type="text"
+                    id="af-name-en"
+                    name="name_en"
+                    maxlength="50"
+                    autocomplete="off"
+                    placeholder="{{ __('Optioneel') }}"
+                >
+            </div>
+
+            <div class="form-veld">
                 <label for="af-category">{{ __('Categorie') }} <span class="verplicht" aria-hidden="true">*</span></label>
                 <select id="af-category" name="category" required aria-required="true">
                     @foreach($categories as $cat)
@@ -191,7 +203,7 @@
 
                 <div class="form-upload">
                     <label for="af-icon-file" class="form-upload-label">
-                        {{ __('Of upload je eigen icoon (PNG, JPG, SVG — max 2MB)') }}
+                        {{ __('Of upload je eigen icoon (PNG, JPG, SVG, max 2MB)') }}
                     </label>
                     <input
                         type="file"

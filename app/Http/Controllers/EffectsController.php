@@ -15,7 +15,7 @@ use App\Services\EffectsCalculator;
 
 class EffectsController extends Controller
 {
-    // Default icoon per categorie (gebruikt als admin niks kiest)
+    // Standaard icoon per categorie
     private const CATEGORY_ICONS = [
         'veiligheid'      => '🚓',
         'recreatie'       => '🌳',
@@ -80,6 +80,7 @@ class EffectsController extends Controller
 
         $validated = $request->validate([
             'function_name' => 'required|string|max:50|unique:destinations,name|unique:function_effects,function_name',
+            'name_en'       => 'nullable|string|max:50',
             'category'      => 'required|string|in:' . implode(',', $categories),
             'description'   => 'nullable|string|max:255',
             'icon'          => 'nullable|string|max:10',
@@ -89,14 +90,15 @@ class EffectsController extends Controller
         ]);
 
         $name     = trim($validated['function_name']);
+        $nameEn   = !empty($validated['name_en']) ? trim($validated['name_en']) : $name;
         $category = $validated['category'];
         $icon     = $this->resolveIcon($request, $validated, $category);
         $effects  = $validated['effects'] ?? [];
 
-        DB::transaction(function () use ($name, $category, $validated, $icon, $categories, $effects) {
+        DB::transaction(function () use ($name, $nameEn, $category, $validated, $icon, $categories, $effects) {
             Destination::create([
                 'name'        => $name,
-                'name_en'     => $name,
+                'name_en'     => $nameEn,
                 'category'    => $category,
                 'icon'        => $icon,
                 'description' => $validated['description'] ?? null,
@@ -174,7 +176,7 @@ class EffectsController extends Controller
         return response()->json(['success' => true]);
     }
 
-    // Bepaalt het icoon: upload > gekozen emoji > default voor de categorie
+    // Bepaalt welk icoon gebruikt wordt
     private function resolveIcon(Request $request, array $validated, string $category): string
     {
         if ($request->hasFile('icon_file') && $request->file('icon_file')->isValid()) {

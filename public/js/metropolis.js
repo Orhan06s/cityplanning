@@ -639,7 +639,7 @@ if (tbody) {
             });
     });
 
-    // Functie toevoegen via modal (BES.2)
+    // Functie toevoegen via modal
     setupAddFunctionModal();
 
     // Reset naar standaardwaarden
@@ -893,3 +893,20 @@ function setupAddFunctionModal() {
 
     window.addEventListener('resize', function() { if (svg) tekenLijn(); });
 })();
+
+
+// Meldingen automatisch laten verdwijnen na 4 seconden, of klik om weg
+document.querySelectorAll('.melding').forEach(function(m) {
+    m.style.cursor = 'pointer';
+    m.title = 'Klik om te sluiten';
+    m.addEventListener('click', function() {
+        m.style.transition = 'opacity 0.3s';
+        m.style.opacity = '0';
+        setTimeout(function() { m.remove(); }, 300);
+    });
+    setTimeout(function() {
+        m.style.transition = 'opacity 0.5s';
+        m.style.opacity = '0';
+        setTimeout(function() { m.remove(); }, 500);
+    }, 4000);
+});

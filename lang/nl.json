@@ -4,7 +4,13 @@
     "Hoofdnavigatie": "Hoofdnavigatie",
     "Bestemmingen": "Bestemmingen",
     "Bestemmingen in de stad": "Bestemmingen in de stad",
-    "Nog geen bestemmingen. Selecteer een functie op het grid om hem in te stellen.": "Nog geen bestemmingen. Selecteer een functie op het grid om hem in te stellen.",
+    "Nog geen bestemmingen.": "Nog geen bestemmingen.",
+    "Klik op een functie om hem als bestemming te kiezen.": "Klik op een functie om hem als bestemming te kiezen.",
+    "Lege plek": "Lege plek",
+    "Kies route": "Kies route",
+    "Wis route": "Wis route",
+    "Functies & Effecten": "Functies & Effecten",
+    "Engelse naam": "Engelse naam",
     "Stel in als bestemming": "Stel in als bestemming",
     "Verwijder als bestemming": "Verwijder als bestemming",
     "Ingesteld als bestemming": "Ingesteld als bestemming",
@@ -130,6 +136,6 @@
     "Icoon": "Icoon",
     "Voorbeeld": "Voorbeeld",
     "Kies een icoon": "Kies een icoon",
-    "Of upload je eigen icoon (PNG, JPG, SVG — max 2MB)": "Of upload je eigen icoon (PNG, JPG, SVG — max 2MB)",
+    "Of upload je eigen icoon (PNG, JPG, SVG, max 2MB)": "Of upload je eigen icoon (PNG, JPG, SVG, max 2MB)",
     "Effect-punten per categorie": "Effect-punten per categorie"
 }
