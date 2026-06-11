@@ -53,8 +53,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/admin/gebruikers/{user}/verwijderen', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
     });
 
-    // Beleidsmaker — eigen dashboard
-    Route::middleware('role:beleidsmaker')->group(function () {
+    // Beleidsmaker — eigen dashboard + PDF export
+    Route::middleware('role:beleidsmaker,admin')->group(function () {
         Route::get('/beleidsmaker/dashboard', [PolicyMakerController::class, 'index'])->name('beleidsmaker.dashboard');
+        Route::get('/export-pdf', [MetropolisController::class, 'exportPdf'])->name('export.pdf');
     });
 });

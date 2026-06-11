@@ -35,6 +35,12 @@
                             {{ __('Gebruikers') }}
                         </a>
                     @endif
+                    @if(auth()->user()->isBeleidsmaker())
+                        <a href="{{ route('beleidsmaker.dashboard') }}"
+                           class="nav-link {{ request()->routeIs('beleidsmaker.dashboard') ? 'is-actief' : '' }}">
+                            {{ __('Dashboard') }}
+                        </a>
+                    @endif
                 @endauth
             </nav>
 

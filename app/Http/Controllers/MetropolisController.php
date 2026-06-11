@@ -307,4 +307,29 @@ class MetropolisController extends Controller
         GridCell::where('id', $request->cell_id)->update(['is_destination' => false]);
         return response()->json(['success' => true]);
     }
+
+    // PDF export pagina: print-vriendelijke weergave van grid + totalen
+    public function exportPdf(Request $request)
+    {
+        $size = (int) session('grid_size', 12);
+        if ($size < 6)  $size = 6;
+        if ($size > 64) $size = 64;
+
+        $gridCells = GridCell::with('destination')
+            ->orderBy('position')
+            ->take($size)
+            ->get();
+
+        $calculator = new EffectsCalculator();
+        $effecten   = $calculator->calculate($gridCells);
+        $categories = $calculator->getCategories();
+
+        return view('export', [
+            'gridCells'  => $gridCells,
+            'effecten'   => $effecten,
+            'categories' => $categories,
+            'gridSize'   => $size,
+            'datum'      => now()->format('d-m-Y H:i'),
+        ]);
+    }
 }
