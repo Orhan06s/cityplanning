@@ -10,6 +10,7 @@
 <script>
     window.metroEffectsMatrix = @json($effectsMatrix);
     window.metroDayNightModifiers = @json($dayNightModifiers);
+    window.metroEventEffects = @json($eventEffects ?? new \stdClass());
     window.metroGridCols = Math.ceil(Math.sqrt({{ $gridSize }}));
     window.metroGridSize = {{ $gridSize }};
     window.metroCanEdit = {{ auth()->user()->canEdit() ? 'true' : 'false' }};

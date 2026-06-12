@@ -11,7 +11,7 @@
     </div>
 
     <p class="manager-pagina-tekst">
-        {{ __('Plan evenementen in zoals een overstroming, stroomstoring of verkeersopstopping en bekijk direct het effect op het stadsgebied.') }}
+        {{ __('Plan evenementen in en bekijk direct het effect op het stadsgebied.') }}
     </p>
 
     @auth

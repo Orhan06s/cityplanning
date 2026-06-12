@@ -842,8 +842,16 @@ function updateDayNightUI() {
 function recalculateScoresWithModifiers() {
     var baseMatrix = window.metroEffectsMatrix     || {};
     var modifiers  = window.metroDayNightModifiers || {};
+    var events     = window.metroEventEffects      || {};
     var phase      = isDay(simTime) ? 'day' : 'night';
     var totals     = {};
+
+    // Begin met alle zichtbare categorieën op 0, plus event-effects als basis
+    document.querySelectorAll('.totaal-kaart').forEach(function(k) {
+        if (!k.dataset.category) return;
+        var cat = k.dataset.category;
+        totals[cat] = (events[cat] || 0);
+    });
 
     document.querySelectorAll('.cel.bezet').forEach(function(cel) {
         var fn = cel.dataset.functionName;

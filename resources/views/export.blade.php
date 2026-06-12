@@ -122,7 +122,8 @@
 
         @media print {
             .knoppen { display: none; }
-            body { margin: 10px; }
+            body { margin: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .cel, .totaal { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
@@ -173,9 +174,9 @@
     </div>
 
     <script>
-        // Open de print-dialog meteen bij laden van de pagina
+        // Open de print-dialog na 1 sec zodat alles netjes is geladen
         window.addEventListener('load', function() {
-            setTimeout(function() { window.print(); }, 300);
+            setTimeout(function() { window.print(); }, 1000);
         });
     </script>
 

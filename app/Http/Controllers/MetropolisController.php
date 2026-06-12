@@ -8,6 +8,7 @@ use App\Models\Destination;
 use App\Models\GridCell;
 use App\Services\EffectsCalculator;
 use App\Models\DayNightModifier;
+use App\Models\SimulationEvent;
 
 class MetropolisController extends Controller
 {
@@ -43,6 +44,22 @@ class MetropolisController extends Controller
         $categories    = $calculator->getCategories();
         $effectsMatrix = $calculator->getMatrix();
 
+        // Actieve evenementen tellen mee in de totale effecten
+        $eventTypes    = config('simulation-events.types', []);
+        $activeEvents  = SimulationEvent::where('is_active', true)->get()
+            ->filter(fn($e) => $e->isCurrentlyActive());
+        $eventEffects  = [];
+        foreach ($categories as $cat) $eventEffects[$cat] = 0;
+        foreach ($activeEvents as $event) {
+            $effects = $eventTypes[$event->type]['effects'] ?? [];
+            foreach ($effects as $cat => $points) {
+                if (isset($effecten[$cat])) {
+                    $effecten[$cat] += $points;
+                    $eventEffects[$cat] += $points;
+                }
+            }
+        }
+
         // Day/night modifiers ophalen en herschikken voor frontend
         $dayNightModifiers = DayNightModifier::all()
     ->groupBy('function_name')
@@ -61,7 +78,8 @@ class MetropolisController extends Controller
     'effectsMatrix'          => $effectsMatrix,
     'gridSize'               => $size,
     'bestemmingen'           => $bestemmingen,
-    'dayNightModifiers'      => $dayNightModifiers, 
+    'dayNightModifiers'      => $dayNightModifiers,
+    'eventEffects'           => $eventEffects,
 ]);
     }
 
@@ -336,10 +354,16 @@ class MetropolisController extends Controller
         return response()->json(['success' => true]);
     }
 
-    // Alle functies van het grid verwijderen
+    // Alle functies, bestemmingen, koppelingen en goedkeuringen wissen
     public function clearGrid(Request $request)
     {
-        GridCell::query()->update(['destination_id' => null, 'linked_group_id' => null]);
+        GridCell::query()->update([
+            'destination_id'  => null,
+            'linked_group_id' => null,
+            'is_destination'  => false,
+            'approved_at'     => null,
+            'approved_by'     => null,
+        ]);
         return response()->json(['success' => true]);
     }
 
@@ -400,7 +424,7 @@ class MetropolisController extends Controller
         if ($size < 6)  $size = 6;
         if ($size > 64) $size = 64;
 
-        $gridCells = GridCell::with('destination')
+        $gridCells = GridCell::with('destination', 'approver')
             ->orderBy('position')
             ->take($size)
             ->get();
@@ -408,6 +432,19 @@ class MetropolisController extends Controller
         $calculator = new EffectsCalculator();
         $effecten   = $calculator->calculate($gridCells);
         $categories = $calculator->getCategories();
+
+        // Actieve evenementen ook meetellen in PDF
+        $eventTypes   = config('simulation-events.types', []);
+        $activeEvents = SimulationEvent::where('is_active', true)->get()
+            ->filter(fn($e) => $e->isCurrentlyActive());
+        foreach ($activeEvents as $event) {
+            $effects = $eventTypes[$event->type]['effects'] ?? [];
+            foreach ($effects as $cat => $points) {
+                if (isset($effecten[$cat])) {
+                    $effecten[$cat] += $points;
+                }
+            }
+        }
 
         return view('export', [
             'gridCells'  => $gridCells,
