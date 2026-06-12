@@ -7,11 +7,10 @@
 
         <header class="dashboard-header">
             <h2 id="dashboard-titel">
-                <span aria-hidden="true">🏛️</span>
                 {{ __('Hallo, :naam', ['naam' => auth()->user()->name]) }}
             </h2>
             <p class="dashboard-intro">
-                {{ __('Hier kun je het stadsgebied bekijken en bestemmingen goedkeuren.') }}
+                {{ __('Bekijk het stadsgebied, geef feedback en keur bestemmingen goed.') }}
             </p>
         </header>
 
@@ -22,6 +21,14 @@
                aria-label="{{ __('Bekijk het stadsgebied') }}">
                 <span aria-hidden="true">🗺️</span>
                 {{ __('Bekijk stadsgebied') }}
+            </a>
+
+            <a href="{{ route('beleidsmaker.feedback') }}"
+               class="btn btn-primair"
+               style="font-size:1.1rem; padding:14px 28px; margin-left:8px;"
+               aria-label="{{ __('Geef feedback op het stadsgebied') }}">
+                <span aria-hidden="true">💬</span>
+                {{ __('Feedback geven') }}
             </a>
         </section>
 
