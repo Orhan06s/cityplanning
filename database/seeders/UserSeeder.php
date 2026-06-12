@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
         User::firstOrCreate(
             ['email' => 'beleidsmaker@metropolis.nl'],
             [
-                'name'     => 'Beleidsmaker',
+                'name'     => 'Policy Maker',
                 'password' => Hash::make('password'),
                 'role'     => 'beleidsmaker',
             ]
