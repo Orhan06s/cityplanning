@@ -1195,6 +1195,30 @@ function setupAddFunctionModal() {
         modus = false;
         startBtn.textContent = 'Kies route';
         zetInfo('');
+        localStorage.removeItem('metroRouteStart');
+        localStorage.removeItem('metroRouteEnd');
+    }
+
+    function saveRoute() {
+        if (startCel && eindCel) {
+            localStorage.setItem('metroRouteStart', startCel.dataset.cellId || '');
+            localStorage.setItem('metroRouteEnd',   eindCel.dataset.cellId  || '');
+        }
+    }
+
+    function herstelRoute() {
+        var s = localStorage.getItem('metroRouteStart');
+        var e = localStorage.getItem('metroRouteEnd');
+        if (!s || !e) return;
+        var startEl = grid.querySelector('.cel[data-cell-id="' + s + '"]');
+        var eindEl  = grid.querySelector('.cel[data-cell-id="' + e + '"]');
+        if (!startEl || !eindEl) return;
+        startCel = startEl; startCel.classList.add('route-start');
+        eindCel  = eindEl;  eindCel.classList.add('route-eind');
+        tekenLijn();
+        wisBtn.hidden = false;
+        startBtn.textContent = 'Nieuwe route';
+        zetInfo('Route weergegeven tussen de twee bestemmingen.');
     }
 
     function tekenLijn() {
@@ -1250,6 +1274,7 @@ function setupAddFunctionModal() {
             eindCel = cel;
             cel.classList.add('route-eind');
             tekenLijn();
+            saveRoute();
             modus = false;
             startBtn.textContent = 'Nieuwe route';
             wisBtn.hidden = false;
@@ -1258,6 +1283,8 @@ function setupAddFunctionModal() {
     }, true);
 
     window.addEventListener('resize', function() { if (svg) tekenLijn(); });
+
+    herstelRoute();
 })();
 
 
