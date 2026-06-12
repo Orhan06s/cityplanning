@@ -776,7 +776,16 @@ var simTime     = null;
 var simInterval = null;
 
 function initSimTime() {
+    var saved = localStorage.getItem('metroSimTime');
+    if (saved) {
+        var d = new Date(parseInt(saved, 10));
+        if (!isNaN(d.getTime())) { simTime = d; return; }
+    }
     simTime = new Date();
+}
+
+function saveSimTime() {
+    if (simTime) localStorage.setItem('metroSimTime', String(simTime.getTime()));
 }
 
 function isDay(time) {
@@ -797,6 +806,7 @@ function startCycle() {
     simInterval = setInterval(function() {
         if (simPaused) return;
         simTime = new Date(simTime.getTime() + simSpeed * 1000);
+        saveSimTime();
         updateDayNightUI();
         recalculateScoresWithModifiers();
     }, 1000);
