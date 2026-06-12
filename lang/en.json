@@ -238,5 +238,23 @@
     "Dit is uw persoonlijke beleidsmaker-omgeving. Bekijk het stadsgebied en geef feedback aan de stedenbouwers.": "This is your personal policy maker environment. View the city area and give feedback to the city planners.",
     "Bekijk het huidige stadsgebied en alle geplaatste functies en effecten.": "View the current city area and all placed functions and effects.",
     "Plaats opmerkingen en verbeteringen op het grid en stuur ze terug naar de stedenbouwers.": "Place comments and improvements on the grid and send them back to the city planners.",
-    "Ga naar feedback": "Go to feedback"
+    "Ga naar feedback": "Go to feedback",
+    "Simulatiebediening": "Simulation Controls",
+    "Simulatietijd": "Simulation Time",
+    "Simulatiesnelheid": "Speed",
+    "Realtime": "Real-time",
+    "Normaal": "Normal",
+    "Snel": "Fast",
+    "Simulatie pauzeren": "Pause Simulation",
+    "Pauze": "Pause",
+    "Hervat": "Resume",
+    "Bewerk:": "Edit:",
+    "Dag": "Day",
+    "Nacht": "Night",
+    "Kies dag of nacht": "Choose day or night",
+    "Dag en nacht modifiers per functie en categorie": "Day and night modifiers per function and category",
+    "Dag/Nacht modifiers": "Day/Night modifiers",
+    "Stel per functie en categorie in hoeveel extra effect-punten worden toegepast tijdens dag (08:00-20:00) of nacht (20:00-08:00). Deze waarden worden opgeteld bij de basis-effecten hierboven.": "Set how many extra effect points are applied during day (08:00–20:00) or night (20:00–08:00) for each function and category. These values are added on top of the base effects above.",
+    "Nog geen functies. Voeg er eerst een toe via de tabel hierboven.": "No functions yet. Add one using the table above first."
+
 }

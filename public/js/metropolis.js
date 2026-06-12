@@ -700,6 +700,332 @@ if (tbody) {
 }
 
 
+// ============================================
+// DAG/NACHT MODIFIERS — Effects Manager (admin tabel)
+// ============================================
+
+var daynightTbody = document.getElementById('daynight-tbody');
+
+if (daynightTbody) {
+    daynightTbody.addEventListener('change', function(e) {
+        var input = e.target;
+        
+        if (!input.classList.contains('input-dag') && !input.classList.contains('input-nacht')) return;
+
+        var waarde = parseInt(input.value, 10);
+
+        if (isNaN(waarde) || waarde < -5 || waarde > 5) {
+            alert('Waarde moet tussen -5 en 5 zijn');
+            input.value = input.dataset.initial;
+            return;
+        }
+
+        var wrap = input.closest('.modifier-input-wrap');
+        var phase = input.dataset.phase;
+        var dagVal   = parseInt(input.getAttribute('data-day-value') || '0', 10);
+        var nachtVal = parseInt(input.getAttribute('data-night-value') || '0', 10);
+        var sendDag   = phase === 'dag' ? waarde : dagVal;
+        var sendNacht = phase === 'nacht' ? waarde : nachtVal;
+
+        var payload = {
+            function_name:  input.dataset.function,
+            category:      input.dataset.category,
+            day_modifier:   sendDag,
+            night_modifier: sendNacht
+        };
+
+       
+        })
+        .catch(function(err) {
+            console.error('❌ Network error:', err); // 👈 DEBUG
+            alert('Netwerkfout: ' + err.message);
+            input.value = input.dataset.initial;
+        })
+        .finally(function() {
+            setTimeout(function() {
+                if (wrap) wrap.removeAttribute('data-status');
+            }, 1200);
+        });
+
+
+}
+
+
+// ============================================
+// DAY/NIGHT CYCLE + SIMULATION SPEED (SIM.6 / SIM.6.1)
+// ============================================
+
+var DAY_START_HOUR   = 8;
+var NIGHT_START_HOUR = 20;
+
+var SIM_SPEEDS = {
+    slow:   60,
+    normal: 300,
+    fast:   1200
+};
+
+var speedLabels = { 
+    slow: 'Realtime', 
+    normal: 'Normaal', 
+    fast: 'Snel' 
+};
+
+var simSpeed    = SIM_SPEEDS.slow;
+var simPaused   = false;
+var simTime     = null;
+var simInterval = null;
+
+function initSimTime() {
+    simTime = new Date();
+}
+
+function isDay(time) {
+    var h = time.getHours();
+    return h >= DAY_START_HOUR && h < NIGHT_START_HOUR;
+}
+
+function formatTime(date) {
+    var h = String(date.getHours()).padStart(2, '0');
+    var m = String(date.getMinutes()).padStart(2, '0');
+    return h + ':' + m;
+}
+
+function startCycle() {
+    if (simInterval) clearInterval(simInterval);
+    if (!simTime) initSimTime();
+
+    simInterval = setInterval(function() {
+        if (simPaused) return;
+        simTime = new Date(simTime.getTime() + simSpeed * 1000);
+        updateDayNightUI();
+        recalculateScoresWithModifiers();
+    }, 1000);
+
+    updateDayNightUI();
+    recalculateScoresWithModifiers();
+}
+
+function updateDayNightUI() {
+    var day = isDay(simTime);
+    var gridEl    = document.querySelector('.grid');
+    var wrapperEl = document.querySelector('.grid-wrapper');
+
+    if (gridEl) {
+        gridEl.classList.toggle('is-day',   day);
+        gridEl.classList.toggle('is-night', !day);
+    }
+    if (wrapperEl) {
+        wrapperEl.classList.toggle('is-day',   day);
+        wrapperEl.classList.toggle('is-night', !day);
+    }
+
+    document.body.classList.toggle('is-day-mode',  day);
+    document.body.classList.toggle('is-night-mode', !day);
+
+    var clockEl = document.getElementById('sim-clock');
+    if (clockEl) clockEl.textContent = formatTime(simTime);
+
+    var phaseEl = document.getElementById('sim-phase-label');
+    if (phaseEl) phaseEl.textContent = day ? window.simLabels.dag : window.simLabels.nacht;
+}
+
+function recalculateScoresWithModifiers() {
+    var baseMatrix = window.metroEffectsMatrix     || {};
+    var modifiers  = window.metroDayNightModifiers || {};
+    var phase      = isDay(simTime) ? 'day' : 'night';
+    var totals     = {};
+
+    document.querySelectorAll('.cel.bezet').forEach(function(cel) {
+        var fn = cel.dataset.functionName;
+        if (!fn) return;
+
+        var base = baseMatrix[fn] || {};
+        var mods = modifiers[fn]  || {};
+
+        Object.keys(base).forEach(function(cat) {
+            var baseScore = base[cat] || 0;
+            var mod = (mods[cat] && mods[cat][phase]) ? mods[cat][phase] : 0;
+            totals[cat] = (totals[cat] || 0) + baseScore + mod;
+        });
+    });
+
+    Object.keys(totals).forEach(function(cat) {
+        var kaart = document.querySelector('.totaal-kaart[data-category="' + cat + '"]');
+        if (!kaart) return;
+        
+        var score  = totals[cat];
+        var teken  = score > 0 ? '+' + score : String(score);
+        var klasse = score > 0 ? 'totaal-positief' : (score < 0 ? 'totaal-negatief' : 'totaal-neutraal');
+
+        kaart.className = 'totaal-kaart ' + klasse;
+        var scoreEl = kaart.querySelector('[data-score]');
+        if (scoreEl) scoreEl.textContent = teken;
+    });
+}
+
+function setSimSpeed(multiplier) {
+    simSpeed = multiplier;
+}
+
+function pauseSim() {
+    simPaused = true;
+}
+
+function resumeSim() {
+    simPaused = false;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var slowBtn = document.querySelector('.btn-speed[data-speed-key="slow"]');
+    if (slowBtn) slowBtn.classList.add('is-actief');
+
+    document.querySelectorAll('.btn-speed').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.btn-speed').forEach(function(b) {
+                b.classList.remove('is-actief');
+            });
+            btn.classList.add('is-actief');
+            setSimSpeed(SIM_SPEEDS[btn.dataset.speedKey]);
+        });
+    });
+
+    var simPauseBtn = document.getElementById('sim-pause-btn');
+if (simPauseBtn) {
+    simPauseBtn.addEventListener('click', function() {
+        var pauseText = simPauseBtn.querySelector('.pause-text');
+        var resumeText = simPauseBtn.querySelector('.resume-text');
+        
+        if (simPaused) {
+            resumeSim();
+            pauseText.classList.remove('hidden');
+            resumeText.classList.add('hidden');
+            simPauseBtn.setAttribute('aria-pressed', 'false');
+        } else {
+            pauseSim();
+            pauseText.classList.add('hidden');
+            resumeText.classList.remove('hidden');
+            simPauseBtn.setAttribute('aria-pressed', 'true');
+        }
+    });
+}
+
+    if (document.querySelector('.grid')) {
+        startCycle();
+    }
+});
+
+
+if (document.querySelector('.grid')) {
+    startCycle();
+}
+
+ var currentPhase = 'dag';
+
+    function switchPhase(phase) {
+        currentPhase = phase;
+
+        var btnDag = document.getElementById('btn-toggle-dag');
+        var btnNacht = document.getElementById('btn-toggle-nacht');
+
+        if (phase === 'dag') {
+            btnDag.classList.add('is-actief');
+            btnDag.setAttribute('aria-selected', 'true');
+            btnNacht.classList.remove('is-actief');
+            btnNacht.setAttribute('aria-selected', 'false');
+            document.body.classList.remove('showing-nacht');
+            document.body.classList.add('showing-dag');
+        } else {
+            btnNacht.classList.add('is-actief');
+            btnNacht.setAttribute('aria-selected', 'true');
+            btnDag.classList.remove('is-actief');
+            btnDag.setAttribute('aria-selected', 'false');
+            document.body.classList.remove('showing-dag');
+            document.body.classList.add('showing-nacht');
+        }
+
+        document.querySelectorAll('.modifier-dag').forEach(function(el) {
+            el.classList.toggle('hidden', phase !== 'dag');
+        });
+        document.querySelectorAll('.modifier-nacht').forEach(function(el) {
+            el.classList.toggle('hidden', phase !== 'nacht');
+        });
+    }
+
+    // Init on load
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.classList.add('showing-dag');
+        
+      
+        var daynightTbody = document.getElementById('daynight-tbody');
+
+        if (daynightTbody) {
+            daynightTbody.addEventListener('change', function(e) {
+                var input = e.target;
+                
+                if (!input.classList.contains('input-dag') && !input.classList.contains('input-nacht')) return;
+
+                var waarde = parseInt(input.value, 10);
+
+                if (isNaN(waarde) || waarde < -5 || waarde > 5) {
+                    alert('Waarde moet tussen -5 en 5 zijn');
+                    input.value = input.dataset.initial;
+                    return;
+                }
+
+                var wrap = input.closest('.modifier-input-wrap');
+                var phase = input.dataset.phase;
+                var dagVal   = parseInt(input.getAttribute('data-day-value') || '0', 10);
+                var nachtVal = parseInt(input.getAttribute('data-night-value') || '0', 10);
+                var sendDag   = phase === 'dag' ? waarde : dagVal;
+                var sendNacht = phase === 'nacht' ? waarde : nachtVal;
+
+                wrap.setAttribute('data-status', 'saving');
+
+                fetch('/api/day-night-modifiers/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrf(),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        function_name:  input.dataset.function,
+                        category:      input.dataset.category,
+                        day_modifier:   sendDag,
+                        night_modifier: sendNacht
+                    })
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.success) {
+                        input.dataset.initial = waarde;
+                        if (phase === 'dag') {
+                            input.setAttribute('data-day-value', waarde);
+                        } else {
+                            input.setAttribute('data-night-value', waarde);
+                        }
+                        wrap.setAttribute('data-status', 'saved');
+                    } else {
+                        alert('Fout bij opslaan.');
+                        input.value = input.dataset.initial;
+                    }
+                })
+                .catch(function() {
+                    alert('Netwerkfout.');
+                    input.value = input.dataset.initial;
+                })
+                .finally(function() {
+                    setTimeout(function() {
+                        if (wrap) wrap.removeAttribute('data-status');
+                    }, 1200);
+                });
+            });
+        }
+    });
+
+
+
+
 // Modal voor functie toevoegen
 function setupAddFunctionModal() {
     var openBtn   = document.getElementById('add-function-btn');

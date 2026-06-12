@@ -25,6 +25,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/evenementen', [SimulationEventController::class, 'index'])->name('events.index');
 
+    Route::get('/api/day-night-modifiers', [MetropolisController::class, 'getDayNightModifiers']);
+
     Route::get('/taal/{lang}', function ($lang) {
         if (in_array($lang, ['nl', 'en'])) {
             session(['lang' => $lang]);
@@ -60,6 +62,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/gebruikers/nieuw', [RegisteredUserController::class, 'create'])->name('admin.users.create');
         Route::post('/admin/gebruikers/nieuw', [RegisteredUserController::class, 'store'])->name('admin.users.store');
         Route::post('/admin/gebruikers/{user}/verwijderen', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+        Route::post('/api/day-night-modifiers/update', [MetropolisController::class, 'updateDayNightModifier']);
     });
 
     // PDF export voor city planner en admin

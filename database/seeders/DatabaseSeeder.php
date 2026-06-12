@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
             GridCellSeeder::class,
             FunctionEffectSeeder::class,
             AdminSeeder::class,
+            DayNightModifiersSeeder::class,  
+
         ]);
     }
 }

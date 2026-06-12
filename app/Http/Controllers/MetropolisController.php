@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Destination;
 use App\Models\GridCell;
 use App\Services\EffectsCalculator;
+<<<<<<< HEAD
+=======
+use App\Models\DayNightModifier;
+>>>>>>> 51914b1 (first commit)
 
 class MetropolisController extends Controller
 {
@@ -42,6 +46,7 @@ class MetropolisController extends Controller
         $categories    = $calculator->getCategories();
         $effectsMatrix = $calculator->getMatrix();
 
+<<<<<<< HEAD
         return view('metropolis', [
             'destinationsByCategory' => $destinationsByCategory,
             'gridCells'              => $gridCells,
@@ -51,6 +56,28 @@ class MetropolisController extends Controller
             'gridSize'               => $size,
             'bestemmingen'           => $bestemmingen,
         ]);
+=======
+        // Day/night modifiers ophalen en herschikken voor frontend
+        $dayNightModifiers = DayNightModifier::all()
+    ->groupBy('function_name')
+    ->map(fn($rows) => $rows->mapWithKeys(fn($r) => [
+        $r->category => [
+            'day'   => $r->day_modifier,
+            'night' => $r->night_modifier,
+        ]
+    ]));
+
+        return view('metropolis', [
+    'destinationsByCategory' => $destinationsByCategory,
+    'gridCells'              => $gridCells,
+    'effecten'               => $effecten,
+    'categories'             => $categories,
+    'effectsMatrix'          => $effectsMatrix,
+    'gridSize'               => $size,
+    'bestemmingen'           => $bestemmingen,
+    'dayNightModifiers'      => $dayNightModifiers, 
+]);
+>>>>>>> 51914b1 (first commit)
     }
 
     public function place(Request $request)
@@ -80,6 +107,43 @@ class MetropolisController extends Controller
         $cell->save();
 
         return redirect('/?size=' . $size)->with('success', __('Functie geplaatst!'));
+    }
+
+
+     public function getDayNightModifiers()
+    {
+        $modifiers = DayNightModifier::all()
+            ->groupBy('function_name')
+            ->map(fn($rows) => $rows->keyBy('category'));
+
+        return response()->json($modifiers);
+    }
+
+   
+    public function updateDayNightModifier(Request $request)
+    {
+        $validated = $request->validate([
+            'function_name'  => 'required|string',
+            'category'       => 'required|string',
+            'day_modifier'   => 'required|integer|between:-5,5',
+            'night_modifier' => 'required|integer|between:-5,5',
+        ]);
+
+        DayNightModifier::updateOrCreate(
+            [
+                'function_name' => $validated['function_name'],
+                'category'      => $validated['category'],
+            ],
+            [
+                'day_modifier'   => $validated['day_modifier'],
+                'night_modifier' => $validated['night_modifier'],
+            ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Modifier updated!'
+        ]);
     }
 
     // Geeft de naam van een verboden buurfunctie terug, of null.

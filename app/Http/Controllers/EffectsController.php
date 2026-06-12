@@ -12,6 +12,7 @@ use App\Models\Destination;
 use App\Models\FunctionEffect;
 use App\Models\GridCell;
 use App\Services\EffectsCalculator;
+use App\Models\DayNightModifier;
 
 class EffectsController extends Controller
 {
@@ -43,13 +44,43 @@ class EffectsController extends Controller
         $calculator = new EffectsCalculator();
         $categories = $calculator->getCategories();
 
+        $dayNightModifiers = DayNightModifier::all()
+            ->groupBy('function_name')
+            ->map(fn($rows) => $rows->keyBy('category'));
+
         return view('effecten-beheren', [
             'groupedByFunction' => $groupedByFunction,
             'categories'        => $categories,
             'presetIcons'       => self::PRESET_ICONS,
             'categoryIcons'     => self::CATEGORY_ICONS,
+            'dayNightModifiers'  => $dayNightModifiers,
         ]);
     }
+
+    
+
+ public function updateDayNightModifier(Request $request)
+{
+    $validated = $request->validate([
+        'function_name'  => 'required|string',
+        'category'       => 'required|string',
+        'day_modifier'   => 'required|integer|between:-5,5',
+        'night_modifier' => 'required|integer|between:-5,5',
+    ]);
+
+    DayNightModifier::updateOrCreate(
+        [
+            'function_name' => $validated['function_name'],
+            'category'      => $validated['category'],
+        ],
+        [
+            'day_modifier'   => $validated['day_modifier'],
+            'night_modifier' => $validated['night_modifier'],
+        ]
+    );
+
+    return response()->json(['success' => true]);
+}
 
     public function updateEffect(Request $request)
     {
@@ -170,6 +201,8 @@ class EffectsController extends Controller
             }
         }
         DB::table('function_effects')->insert($rows);
+
+         app(\Database\Seeders\DayNightModifiersSeeder::class)->run();
 
         session()->flash('success', __('Effecten gereset naar standaardwaarden!'));
 

@@ -176,5 +176,23 @@
     "Voorbeeld": "Voorbeeld",
     "Kies een icoon": "Kies een icoon",
     "Of upload je eigen icoon (PNG, JPG, SVG, max 2MB)": "Of upload je eigen icoon (PNG, JPG, SVG, max 2MB)",
-    "Effect-punten per categorie": "Effect-punten per categorie"
+    "Effect-punten per categorie": "Effect-punten per categorie",
+    "Simulatiebediening": "Simulatiebediening",
+    "Simulatietijd": "Simulatietijd",
+    "Simulatiesnelheid": "Snelheid",
+    "Realtime": "Realtime",
+    "Normaal": "Normaal",
+    "Snel": "Snel",
+    "Simulatie pauzeren": "Pauzeren simulatie",
+    "Pauze": "Pauze",
+    "Hervat": "Hervat",
+    "Dag": "Dag",
+    "Nacht": "Nacht",
+    "Bewerk:": "Bewerk:",
+    "Kies dag of nacht": "Kies dag of nacht",
+    "Dag en nacht modifiers per functie en categorie": "Dag- en nachtmodifiers per functie en categorie",
+    "Dag/Nacht modifiers": "Dag/Nacht modifiers",
+    "Stel per functie en categorie in hoeveel extra effect-punten worden toegepast tijdens dag (08:00-20:00) of nacht (20:00-08:00). Deze waarden worden opgeteld bij de basis-effecten hierboven.": "Stel per functie en categorie in hoeveel extra effect-punten worden toegepast tijdens dag (08:00–20:00) of nacht (20:00–08:00). Deze waarden komen bovenop de basis-effecten.",
+    "Nog geen functies. Voeg er eerst een toe via de tabel hierboven.": "Nog geen functies. Voeg er eerst een toe via de tabel hierboven."
 }
+

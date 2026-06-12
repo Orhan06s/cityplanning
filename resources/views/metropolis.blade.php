@@ -4,8 +4,12 @@
 
 @section('content')
 
+
+
+
 <script>
     window.metroEffectsMatrix = @json($effectsMatrix);
+    window.metroDayNightModifiers = @json($dayNightModifiers);
     window.metroGridCols = Math.ceil(Math.sqrt({{ $gridSize }}));
     window.metroGridSize = {{ $gridSize }};
     window.metroCanEdit = {{ auth()->user()->canEdit() ? 'true' : 'false' }};
@@ -47,7 +51,28 @@
                 @endif
             @endauth
         </h2>
+<div class="sim-controls" role="toolbar" aria-label="{{ __('Simulatiebediening') }}">
 
+    <span id="sim-phase-label" class="sim-phase">{{ __('Dag') }}</span>
+
+    <span id="sim-clock" class="sim-clock" aria-label="{{ __('Simulatietijd') }}">00:00</span>
+
+    <div class="sim-speed-groep" role="group" aria-label="{{ __('Simulatiesnelheid') }}">
+        <button class="btn-speed is-actief" data-speed-key="slow"   type="button">{{ __('Realtime') }}</button>
+        <button class="btn-speed"           data-speed-key="normal" type="button">{{ __('Normaal') }}</button>
+        <button class="btn-speed"           data-speed-key="fast"   type="button">{{ __('Snel') }}</button>
+    </div>
+
+    <button id="sim-pause-btn" class="btn-sim-pause" type="button"
+            aria-pressed="false"
+            aria-label="{{ __('Simulatie pauzeren') }}">
+        <span class="pause-text">{{ __('Pauze') }}</span>
+        <span class="resume-text hidden">{{ __('Hervat') }}</span>
+    </button>
+
+</div>
+
+<script>window.simLabels = { dag: "{{ __('Dag') }}", nacht: "{{ __('Nacht') }}", pauze: "{{ __('Pauze') }}", hervat: "{{ __('Hervat') }}" };</script>
         @include('partials.grid')
     </div>
 

@@ -103,6 +103,124 @@
         </table>
     </div>
 
+   <div class="manager-pagina-header daynight-header">
+    <h2 class="manager-pagina-titel">{{ __('Dag/Nacht modifiers') }}</h2>
+</div>
+
+<p class="manager-pagina-tekst">
+    {{ __('Stel per functie en categorie in hoeveel extra effect-punten worden toegepast tijdens dag (08:00-20:00) of nacht (20:00-08:00). Deze waarden worden opgeteld bij de basis-effecten hierboven.') }}
+</p>
+
+
+<div class="daynight-toggle-wrapper">
+    <span class="toggle-label">{{ __('Bewerk:') }}</span>
+    
+    <div class="daynight-toggle" role="tablist" aria-label="{{ __('Kies dag of nacht') }}">
+        <button 
+            type="button"
+            id="btn-toggle-dag"
+            class="toggle-btn toggle-btn-dag is-actief"
+            role="tab"
+            aria-selected="true"
+            aria-controls="daynight-tabel"
+            onclick="switchPhase('dag')"
+        >
+          
+            <span>{{ __('Dag') }}</span>
+        </button>
+
+        <button 
+            type="button"
+            id="btn-toggle-nacht"
+            class="toggle-btn toggle-btn-nacht"
+            role="tab"
+            aria-selected="false"
+            aria-controls="daynight-tabel"
+            onclick="switchPhase('nacht')"
+        >
+        
+            <span>{{ __('Nacht') }}</span>
+        </button>
+    </div>
+</div>
+
+<div class="effects-manager-tabel-wrapper" tabindex="0">
+    <table
+        class="effects-manager-tabel daynight-tabel"
+        id="daynight-tabel"
+        role="table"
+        aria-label="{{ __('Dag en nacht modifiers per functie en categorie') }}"
+    >
+        <thead>
+            <tr role="row">
+                <th scope="col" class="th-functie">{{ __('Functie') }}</th>
+                @foreach($categories as $category)
+                    <th scope="col" class="th-categorie th-phase-categorie" data-category="{{ $category }}">
+                        {{ __($category) }}
+                    </th>
+                @endforeach
+            </tr>
+        </thead>
+        <tbody id="daynight-tbody">
+            @forelse($groupedByFunction as $functionName => $effects)
+                <tr role="row" class="effects-row daynight-row" data-function="{{ $functionName }}">
+                    <td class="td-functienaam">{{ __($functionName) }}</td>
+
+                    @foreach($categories as $category)
+                        @php
+                            $mod = $dayNightModifiers[$functionName][$category] ?? null;
+                            $dagVal  = $mod->day_modifier ?? 0;
+                            $nachtVal = $mod->night_modifier ?? 0;
+                        @endphp
+
+                        <td role="cell" class="td-points td-modifier-cell">
+                            {{-- DAY INPUT (visible by default) --}}
+                            <div class="modifier-input-wrap modifier-dag" data-phase="dag">
+                                <input
+                                    type="number"
+                                    class="effect-input input-dag"
+                                    value="{{ $dagVal }}"
+                                    min="-5"
+                                    max="5"
+                                    step="1"
+                                    data-function="{{ $functionName }}"
+                                    data-category="{{ $category }}"
+                                    data-phase="dag"
+                                    data-initial="{{ $dagVal }}"
+                                    data-night-value="{{ $nachtVal }}"
+                                    aria-label="{{ __($functionName) }} - {{ __($category) }} - {{ __('Dag modifier') }}"
+                                />
+                            </div>
+
+                            {{-- NIGHT INPUT (hidden by default, shown when toggled) --}}
+                            <div class="modifier-input-wrap modifier-nacht hidden" data-phase="nacht">
+                                <input
+                                    type="number"
+                                    class="effect-input input-nacht"
+                                    value="{{ $nachtVal }}"
+                                    min="-5"
+                                    max="5"
+                                    step="1"
+                                    data-function="{{ $functionName }}"
+                                    data-category="{{ $category }}"
+                                    data-phase="nacht"
+                                    data-initial="{{ $nachtVal }}"
+                                    data-day-value="{{ $dagVal }}"
+                                    aria-label="{{ __($functionName) }} - {{ __($category) }} - {{ __('Nacht modifier') }}"
+                                />
+                            </div>
+                        </td>
+                    @endforeach
+                </tr>
+            @empty
+                <tr id="daynight-empty-row">
+                    <td colspan="{{ count($categories) + 1 }}" class="effects-empty">
+                        {{ __('Nog geen functies. Voeg er eerst een toe via de tabel hierboven.') }}
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
 </div>
 
 
