@@ -7,10 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Destination;
 use App\Models\GridCell;
 use App\Services\EffectsCalculator;
-<<<<<<< HEAD
-=======
 use App\Models\DayNightModifier;
->>>>>>> 51914b1 (first commit)
 
 class MetropolisController extends Controller
 {
@@ -46,17 +43,6 @@ class MetropolisController extends Controller
         $categories    = $calculator->getCategories();
         $effectsMatrix = $calculator->getMatrix();
 
-<<<<<<< HEAD
-        return view('metropolis', [
-            'destinationsByCategory' => $destinationsByCategory,
-            'gridCells'              => $gridCells,
-            'effecten'               => $effecten,
-            'categories'             => $categories,
-            'effectsMatrix'          => $effectsMatrix,
-            'gridSize'               => $size,
-            'bestemmingen'           => $bestemmingen,
-        ]);
-=======
         // Day/night modifiers ophalen en herschikken voor frontend
         $dayNightModifiers = DayNightModifier::all()
     ->groupBy('function_name')
@@ -77,7 +63,6 @@ class MetropolisController extends Controller
     'bestemmingen'           => $bestemmingen,
     'dayNightModifiers'      => $dayNightModifiers, 
 ]);
->>>>>>> 51914b1 (first commit)
     }
 
     public function place(Request $request)
